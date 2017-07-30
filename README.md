@@ -26,20 +26,20 @@ It is true, one could write their diary with their favorite text editor, having 
 
 ```
 
-          SPA (CycleJS, xstream)   •  •  •  •  •  •  •  •  •  •
-          ______________________                              •
-                    •                                         •
-                    •                                         •
-                    •                                        REST
-                 GraphQL                                      •
-                    •                                         •
-                    •                                         •
-                    •                                         •
-          API (Node.js Express)    •  •  REST  •  •  >  ElasticSearch
+          SPA (CycleJS, xstream) . . . . . . . . . . . . . . .
+          ______________________                             .
+                    .                                        .
+                    .                                        .
+                    .                                       REST
+                 GraphQL                                     .
+                    .                                        .
+                    .                                        .
+                    .                                        .
+          API (Node.js Express)   . . . REST . . . >   ElasticSearch
           _____________________                         _____________
-                    •
-                    •
-                    •
+                    .
+                    .
+                    .
                  MongoDB
                  _______
 
