@@ -1,0 +1,32 @@
+{
+  "name": "diary",
+  "version": "1.0.0",
+  "description": "A simple diary app with support for Markdown and fulltext search",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test/*.test.js --require babel-polyfill --require babel-register --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mathieueveillard/diary.git"
+  },
+  "keywords": [
+    "diary"
+  ],
+  "author": "Mathieu Eveillard",
+  "license": "LGPL-3.0",
+  "bugs": {
+    "url": "https://github.com/mathieueveillard/diary/issues"
+  },
+  "homepage": "https://github.com/mathieueveillard/diary#readme",
+  "dependencies": {
+    "xml-parser": "^1.2.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-register": "^6.26.0",
+    "mocha": "^4.0.1"
+  }
+}
