@@ -1,12 +1,21 @@
 const parse = require('xml-parser')
 
 /**
- * A function that transforms inline styles described as xml to markdown
- * Doesn't handle bold AND italic at the same time, e.g. **_text_**
+ * A function that handles paragraphs
  */
 export const inlineStyleToMarkdown = function(xml) {
 
     const obj = parse(xml).root
+
+    /**
+     * Returns null for non-paragraphs or empty paragraphs
+     */
+    if (obj.name !== "w:p" || obj.children.length > 0
+        && obj.children[0].name === "w:pPr"
+        && obj.children[0].children.length > 0
+        && obj.children[0].children[0].name === "w:jc") {
+        return null
+    }
 
     /**
      * This will be used later
@@ -21,7 +30,7 @@ export const inlineStyleToMarkdown = function(xml) {
             && node.children[0].name === "w:rPr"
             && node.children[0].children.length > 0
             && node.children[0].children[0].name === "w:vertAlign") {
-                return 1
+            return 1
         } else {
             return 0
         }

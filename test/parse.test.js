@@ -4,7 +4,26 @@ const assert = require("assert")
 describe("Array", function() {
     describe("#inlineStyleToMarkdown()", function() {
 
-        it("should ignore 'w:r' tags", function() {
+        it("should ignore non-paragraphs", function() {
+            const xml = `<nothing/>`
+            const result = inlineStyleToMarkdown(xml)
+            assert.equal(result, null)
+        })
+        
+        it("should ignore empty paragraphs", function() {
+
+            const xml = `
+            <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
+                <w:pPr>
+                    <w:jc w:val="left"/>
+                </w:pPr>
+            </w:p>`
+
+            const result = inlineStyleToMarkdown(xml)
+            assert.equal(result, null)
+        })
+        
+        it("should ignore other than 'w:r' tags", function() {
 
             const xml = `
             <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
@@ -92,7 +111,7 @@ describe("Array", function() {
             assert.equal(result, "__du texte en gras__")
         })
         
-        it("should handle 'w:t' tags with stike style", function() {
+        it("should handle 'w:t' tags with strike style", function() {
 
             const xml = `
             <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
@@ -108,7 +127,7 @@ describe("Array", function() {
             assert.equal(result, "~~du texte barré~~")
         })
         
-        it("should handle 'w:t' tags with underline style (ignoring style)", function() {
+        it("should handle 'w:t' tags with underline style", function() {
 
             const xml = `
             <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
@@ -143,7 +162,7 @@ describe("Array", function() {
             assert.equal(result, "Voici _du texte en italique_")
         })
         
-        it("should handle 'w:t' tags with vertAlign (superscript or subscript) style", function() {
+        it("should handle 'w:t' tags with vertAlign style", function() {
 
             const xml = `
             <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
@@ -165,7 +184,7 @@ describe("Array", function() {
             assert.equal(result, "La Nième fois")
         })
         
-        it("should handle 'w:t' tags with vertAlign (edge cases)", function() {
+        it("should handle 'w:t' tags with vertAlign (edge case)", function() {
 
             const xml = `
             <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
@@ -184,7 +203,7 @@ describe("Array", function() {
             assert.equal(result, "ième fois")
         })
         
-        it("should handle 'w:t' tags with vertAlign (edge cases 2)", function() {
+        it("should handle 'w:t' tags with vertAlign (edge case 2)", function() {
 
             const xml = `
             <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
@@ -203,7 +222,7 @@ describe("Array", function() {
             assert.equal(result, "La Nième")
         })
         
-        it("should handle 'w:t' tags with vertAlign (edge cases 3)", function() {
+        it("should handle 'w:t' tags with vertAlign (edge case 3)", function() {
 
             const xml = `
             <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
