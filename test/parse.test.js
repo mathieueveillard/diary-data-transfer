@@ -108,7 +108,7 @@ describe("Array", function() {
             assert.equal(result, "~~du texte barré~~")
         })
         
-        it("should handle 'w:t' tags with underline style", function() {
+        it("should handle 'w:t' tags with underline style (ignoring style)", function() {
 
             const xml = `
             <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
@@ -143,6 +143,107 @@ describe("Array", function() {
             assert.equal(result, "Voici _du texte en italique_")
         })
         
+        it("should handle 'w:t' tags with vertAlign (superscript or subscript) style", function() {
+
+            const xml = `
+            <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
+                <w:r w:rsidR="00892CFC">
+                    <w:t xml:space="preserve">La N</w:t>
+                </w:r>
+                <w:r w:rsidR="00892CFC" w:rsidRPr="00892CFC">
+                    <w:rPr>
+                        <w:vertAlign w:val="superscript"/>
+                    </w:rPr>
+                    <w:t>ième</w:t>
+                </w:r>
+                <w:r w:rsidR="00892CFC">
+                    <w:t xml:space="preserve">fois</w:t>
+                </w:r>
+            </w:p>`
+
+            const result = inlineStyleToMarkdown(xml)
+            assert.equal(result, "La Nième fois")
+        })
+        
+        it("should handle 'w:t' tags with vertAlign (edge cases)", function() {
+
+            const xml = `
+            <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
+                <w:r w:rsidR="00892CFC" w:rsidRPr="00892CFC">
+                    <w:rPr>
+                        <w:vertAlign w:val="superscript"/>
+                    </w:rPr>
+                    <w:t>ième</w:t>
+                </w:r>
+                <w:r w:rsidR="00892CFC">
+                    <w:t xml:space="preserve">fois</w:t>
+                </w:r>
+            </w:p>`
+
+            const result = inlineStyleToMarkdown(xml)
+            assert.equal(result, "ième fois")
+        })
+        
+        it("should handle 'w:t' tags with vertAlign (edge cases 2)", function() {
+
+            const xml = `
+            <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
+                <w:r w:rsidR="00892CFC">
+                    <w:t xml:space="preserve">La N</w:t>
+                </w:r>
+                <w:r w:rsidR="00892CFC" w:rsidRPr="00892CFC">
+                    <w:rPr>
+                        <w:vertAlign w:val="superscript"/>
+                    </w:rPr>
+                    <w:t>ième</w:t>
+                </w:r>
+            </w:p>`
+
+            const result = inlineStyleToMarkdown(xml)
+            assert.equal(result, "La Nième")
+        })
+        
+        it("should handle 'w:t' tags with vertAlign (edge cases 3)", function() {
+
+            const xml = `
+            <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
+                <w:r w:rsidR="00892CFC">
+                    <w:t xml:space="preserve">La N</w:t>
+                </w:r>
+                <w:r w:rsidR="00892CFC" w:rsidRPr="00892CFC">
+                    <w:rPr>
+                        <w:vertAlign w:val="superscript"/>
+                    </w:rPr>
+                    <w:t>ième</w:t>
+                </w:r>
+                <w:r w:rsidR="00892CFC" w:rsidRPr="00892CFC">
+                    <w:rPr>
+                        <w:vertAlign w:val="superscript"/>
+                    </w:rPr>
+                    <w:t>ième</w:t>
+                </w:r>
+            </w:p>`
+
+            const result = inlineStyleToMarkdown(xml)
+            assert.equal(result, "La Nième ième")
+        })
+        
+        it("should handle 'w:t' tags with content starting with .", function() {
+
+            const xml = `
+            <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
+                <w:r w:rsidR="00892CFC">
+                    <w:t xml:space="preserve">La fin</w:t>
+                </w:r>
+                <w:r w:rsidR="00892CFC">
+                    <w:t xml:space="preserve">.</w:t>
+                </w:r>
+            </w:p>`
+
+            const result = inlineStyleToMarkdown(xml)
+            assert.equal(result, "La fin.")
+        })
+        
         it("should transform inline styles described as xml to markdown", function() {
 
             const xml = `
@@ -175,7 +276,7 @@ describe("Array", function() {
                     <w:rPr>
                         <w:u w:val="single"/>
                     </w:rPr>
-                    <w:t>du texte souligné</w:t>
+                    <w:t>du texte souligné par le</w:t>
                 </w:r>
                 <w:r w:rsidRPr="00EE4EF5">
                 </w:r>
@@ -186,13 +287,25 @@ describe("Array", function() {
                     <w:t>un truc pas valide</w:t>
                     <w:t>un truc pas valide</w:t>
                 </w:r>
+                <w:r w:rsidR="00892CFC">
+                    <w:t xml:space="preserve">1</w:t>
+                </w:r>
+                <w:r w:rsidR="00892CFC" w:rsidRPr="00892CFC">
+                    <w:rPr>
+                        <w:vertAlign w:val="superscript"/>
+                    </w:rPr>
+                    <w:t>er</w:t>
+                </w:r>
                 <w:r>
-                    <w:t xml:space="preserve">. Voilà.</w:t>
+                    <w:t xml:space="preserve">lecteur</w:t>
+                </w:r>
+                <w:r>
+                    <w:t xml:space="preserve">.</w:t>
                 </w:r>
             </w:p>`
 
             const result = inlineStyleToMarkdown(xml)
-            assert.equal(result, "Voici _du texte en italique_ et __du texte en gras__ ainsi que du texte souligné . Voilà.")
+            assert.equal(result, "Voici _du texte en italique_ et __du texte en gras__ ainsi que du texte souligné par le 1er lecteur.")
         })
     })
 })
