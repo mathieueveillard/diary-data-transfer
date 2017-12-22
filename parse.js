@@ -1,9 +1,12 @@
 const parse = require('xml-parser')
 
+
 /**
- * A function that handles paragraphs
+ * A main function that parses xml and dispatches to the appropriate handling function.
+ * Returns the paragraph as an object, either `{date}`, `{title}` or `{body}`
+ * @param {*} xml The paragraph described as an xml document
  */
-export const inlineStyleToMarkdown = function(xml) {
+export const dispatch = function(xml) {
 
     const obj = parse(xml).root
 
@@ -14,8 +17,71 @@ export const inlineStyleToMarkdown = function(xml) {
         && obj.children[0].name === "w:pPr"
         && obj.children[0].children.length > 0
         && obj.children[0].children[0].name === "w:jc") {
+
         return null
     }
+    else if (obj.children.length > 0
+        && obj.children[0].name === "w:pPr"
+        && obj.children[0].children.length > 0
+        && obj.children[0].children[0].name === "w:pStyle") {
+        
+        switch (obj.children[0].children[0].attributes["w:val"]) {
+            case "MaDate":
+                return handleDateParagraph(obj)
+                break
+        
+            case "MonTitre":
+                return handleTitleParagraph(obj)
+                break
+        
+            case "MonTweet":
+            case "MonParagraphe":
+            case "MaCitation":
+                return handleTextParagraph(obj)
+                break
+            
+            default:
+                return null
+                break
+        }
+    }
+}
+
+
+/**
+ * A function that handles date paragraphs
+ * @param {*} obj The object resulting from `parse(xml)`
+ */
+const handleDateParagraph = function(obj) {
+
+}
+
+
+/**
+ * A function that handles title paragraphs
+ * @param {*} obj The object resulting from `parse(xml)`
+ */
+const handleTitleParagraph = function(obj) {
+
+    let children = obj.children.filter(node => node.name === "w:r")
+    switch (children.length) {
+        case 1:
+            return {title: children[0].children[0].content}
+            break
+
+        case 0:
+        default:
+            return null
+            break
+    }
+}
+
+
+/**
+ * A function that handles text paragraphs (MonTweet, MonParagraphe, MaCitation)
+ * @param {*} obj The object resulting from `parse(xml)`
+ */
+const handleTextParagraph = function(obj) {
 
     /**
      * This will be used later
@@ -107,9 +173,9 @@ export const inlineStyleToMarkdown = function(xml) {
     /**
      * Clean and returns as a string
      */
-    const text = children.map(node => node.trim())
+    const body = children.map(node => node.trim())
         .filter(node => node !== "")
         .join(" ")
         
-    return text
+    return {body}
 }
