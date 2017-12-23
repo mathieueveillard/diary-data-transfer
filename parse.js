@@ -6,7 +6,7 @@ const parse = require('xml-parser')
  * Returns the paragraph as an object, either `{date}`, `{title}` or `{body}`
  * @param {*} xml The paragraph described as an xml document
  */
-export const dispatch = function(xml) {
+export const dispatch = function(xml, year) {
 
     const obj = parse(xml).root
 
@@ -27,7 +27,7 @@ export const dispatch = function(xml) {
         
         switch (obj.children[0].children[0].attributes["w:val"]) {
             case "MaDate":
-                return handleDateParagraph(obj)
+                return handleDateParagraph(obj, year)
                 break
         
             case "MonTitre":
@@ -52,8 +52,84 @@ export const dispatch = function(xml) {
  * A function that handles date paragraphs
  * @param {*} obj The object resulting from `parse(xml)`
  */
-const handleDateParagraph = function(obj) {
+const handleDateParagraph = function(obj, year) {
 
+    let children = obj.children.filter(node => node.name === "w:r")
+    
+    const date = {}
+
+    let grandChildren = children.map(child => child.children.filter(node => node.name === "w:t")[0])
+
+    const numbers = (grandChildren.map(child => child.content)
+        .join(" ")
+        .match(/\d*/g) || [])
+        .filter(s => s !== "")
+        .map(s => parseInt(s))
+
+    if (numbers.length > 0) {
+        date.day = numbers[0]
+    }
+
+    if (numbers.length > 1) {
+        date.hours = numbers[1]
+    }
+
+    if (numbers.length > 2) {
+        date.minutes = numbers[2]
+    }
+
+    /**
+     * Find month
+     */
+    const months = (grandChildren.map(child => child.content)
+        .join(" ")
+        .match(/janvier|f[e|é]vrier|mars|avril|mai|juin|juillet|ao[u|û]t|septembre|octobre|novembre|d[e|é]cembre/i) || [])
+        .filter(s => s !== "")
+        .map(s => {
+            s = s.toLowerCase()
+            switch (s) {
+                case "février":
+                    s = "fevrier"
+                    break
+            
+                case "août":
+                    s = "aout"
+                    break
+            
+                case "décembre":
+                    s = "decembre"
+                    break
+            
+                default:
+                    break
+            }
+            const MONTHS = [
+                "janvier",
+                "fevrier",
+                "mars",
+                "avril",
+                "mai",
+                "juin",
+                "juillet",
+                "aout",
+                "septembre",
+                "octobre",
+                "novembre",
+                "decembre"
+            ]
+            return MONTHS.indexOf(s) + 1
+        })
+
+    if (months.length > 0) {
+        date.month = months[0]
+    }
+
+    /**
+     * Set year
+     */
+    date.year = year || (new Date()).getFullYear()
+
+    return {date}
 }
 
 

@@ -23,17 +23,151 @@ describe("Array", function() {
             assert.equal(result, null)
         })
         
-        it("should ignore empty paragraphs", function() {
+        it("date: should ignore tags other than 'w:r' and 'w:t'", function() {
 
             const xml = `
-            <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
+            <w:p w14:paraId="0D9716AF" w14:textId="3F66E9E7" w:rsidR="002C6004" w:rsidRDefault="00477B28" w:rsidP="0011353B">
                 <w:pPr>
-                    <w:jc w:val="left"/>
+                    <w:pStyle w:val="MaDate"/>
                 </w:pPr>
+                <w:r>
+                    <w:lastRenderedPageBreak/>
+                    <w:t>1</w:t>
+                </w:r>
             </w:p>`
 
             const result = dispatch(xml)
-            assert.equal(result, null)
+            assert.equal(result.date.day, 1)
+        })
+        
+        it("date: should ignore non-numeric contents", function() {
+
+            const xml = `
+            <w:p w14:paraId="0D9716AF" w14:textId="3F66E9E7" w:rsidR="002C6004" w:rsidRDefault="00477B28" w:rsidP="0011353B">
+                <w:pPr>
+                    <w:pStyle w:val="MaDate"/>
+                </w:pPr>
+                <w:r>
+                    <w:t>Dimanche 1</w:t>
+                </w:r>
+            </w:p>`
+
+            const result = dispatch(xml)
+            assert.equal(result.date.day, 1)
+        })
+        
+        it("date: should ignore non-numeric contents except months (non case-sensitive)", function() {
+
+            const xml = `
+            <w:p w14:paraId="0D9716AF" w14:textId="3F66E9E7" w:rsidR="002C6004" w:rsidRDefault="00477B28" w:rsidP="0011353B">
+                <w:pPr>
+                    <w:pStyle w:val="MaDate"/>
+                </w:pPr>
+                <w:r>
+                    <w:t>Février</w:t>
+                </w:r>
+            </w:p>`
+
+            const result = dispatch(xml)
+            assert.equal(result.date.month, 2)
+        })
+        
+        it("date: should set year according to argument", function() {
+
+            const xml = `
+            <w:p w14:paraId="0D9716AF" w14:textId="3F66E9E7" w:rsidR="002C6004" w:rsidRDefault="00477B28" w:rsidP="0011353B">
+                <w:pPr>
+                    <w:pStyle w:val="MaDate"/>
+                </w:pPr>
+                <w:r>
+                    <w:t>1</w:t>
+                </w:r>
+            </w:p>`
+
+            const result = dispatch(xml, 2016)
+            assert.equal(result.date.year, 2016)
+        })
+        
+        it("date: should set year according to default value if no argument is provided", function() {
+
+            const xml = `
+            <w:p w14:paraId="0D9716AF" w14:textId="3F66E9E7" w:rsidR="002C6004" w:rsidRDefault="00477B28" w:rsidP="0011353B">
+                <w:pPr>
+                    <w:pStyle w:val="MaDate"/>
+                </w:pPr>
+                <w:r>
+                    <w:t>1</w:t>
+                </w:r>
+            </w:p>`
+
+            const result = dispatch(xml)
+            assert.equal(result.date.year, (new Date()).getFullYear())
+        })
+        
+        it("date: should set day, month, year, hours and minutes", function() {
+
+            const xml = `
+            <w:p w14:paraId="0D9716AF" w14:textId="3F66E9E7" w:rsidR="002C6004" w:rsidRDefault="00477B28" w:rsidP="0011353B">
+                <w:pPr>
+                    <w:pStyle w:val="MaDate"/>
+                </w:pPr>
+                <w:r>
+                    <w:lastRenderedPageBreak/>
+                    <w:t>Dimanche</w:t>
+                </w:r>
+                <w:r w:rsidR="002C6004">
+                    <w:t xml:space="preserve">
+                    </w:t>
+                </w:r>
+                <w:r>
+                    <w:t>
+                        1
+                    </w:t>
+                </w:r>
+                <w:r w:rsidRPr="00477B28">
+                    <w:rPr>
+                        <w:vertAlign w:val="superscript"/>
+                    </w:rPr>
+                    <w:t>
+                        er
+                    </w:t>
+                </w:r>
+                <w:r>
+                    <w:t xml:space="preserve">
+                    </w:t>
+                </w:r>
+                <w:r w:rsidR="002C6004">
+                    <w:t>
+                        février
+                    </w:t>
+                </w:r>
+                <w:r w:rsidR="001A2A94">
+                    <w:t xml:space="preserve">
+                    </w:t>
+                </w:r>
+                <w:r>
+                    <w:t>
+                        – 23
+                    </w:t>
+                </w:r>
+                <w:r w:rsidR="00D55DF0">
+                    <w:t>
+                        :
+                    </w:t>
+                </w:r>
+                <w:r>
+                    <w:t>
+                        54
+                    </w:t>
+                </w:r>
+            </w:p>`
+
+            const result = dispatch(xml, 2016)
+            assert.equal(result.date.day, 1)
+            assert.equal(result.date.month, 2)
+            assert.equal(result.date.year, 2016)
+            assert.equal(result.date.hours, 23)
+            assert.equal(result.date.minutes, 54)
         })
         
         it("title: should ignore tags other than 'w:r'", function() {
