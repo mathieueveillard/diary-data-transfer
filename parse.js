@@ -241,10 +241,10 @@ const handleTextParagraph = function(obj) {
 
         for (let i = 0; i < children.length; i++) {
             if (combine[i] === 0 && i + 1 < children.length && combine[i + 1] === 1) {
-                combinedChildren[combinedChildren.length] = children[i] + children[i + 1]
+                combinedChildren.push(children[i] + children[i + 1])
                 i++
             } else {
-                combinedChildren[combinedChildren.length] = children[i]
+                combinedChildren.push(children[i])
             }
         }
 
