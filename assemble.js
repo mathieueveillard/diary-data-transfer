@@ -13,7 +13,17 @@ export const assemble = function(parsed) {
     for (let obj of parsed) {
 
         if (obj.hasOwnProperty("date")) {
-            date = obj.date
+            if (isNaN(obj.date)) {
+                date = (new Date(
+                    obj.date.year,
+                    obj.date.month - 1,
+                    obj.date.day,
+                    obj.date.hours,
+                    obj.date.minutes
+                )).getTime() //Beware: local time
+            } else {
+                date = obj.date
+            }
             title = DEFAULT_TITLE
             body = undefined
         }
