@@ -224,7 +224,7 @@ describe("Array", function() {
             assert.equal(result, null)
         })
         
-        it("should ignore 'w:t' tags with no child tag", function() {
+        it("body: should ignore 'w:t' tags with no child tag", function() {
 
             const xml = `
             <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
@@ -240,7 +240,7 @@ describe("Array", function() {
             assert.equal(result.body, "")
         })
         
-        it("should ignore 'w:t' tags with more than 2 child tags", function() {
+        it("body: should ignore 'w:t' tags with more than 2 child tags", function() {
 
             const xml = `
             <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
@@ -260,7 +260,7 @@ describe("Array", function() {
             assert.equal(result.body, "")
         })
         
-        it("should handle 'w:t' tags if no inline style is associated", function() {
+        it("body: should handle 'w:t' tags if no inline style is associated", function() {
 
             const xml = `
             <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
@@ -276,7 +276,7 @@ describe("Array", function() {
             assert.equal(result.body, "Voici")
         })
         
-        it("should handle 'w:t' tags with italic style", function() {
+        it("body: should handle 'w:t' tags with italic style", function() {
 
             const xml = `
             <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
@@ -295,7 +295,7 @@ describe("Array", function() {
             assert.equal(result.body, "_du texte en italique_")
         })
         
-        it("should handle 'w:t' tags with bold style", function() {
+        it("body: should handle 'w:t' tags with bold style", function() {
 
             const xml = `
             <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
@@ -314,7 +314,7 @@ describe("Array", function() {
             assert.equal(result.body, "__du texte en gras__")
         })
         
-        it("should handle 'w:t' tags with strike style", function() {
+        it("body: should handle 'w:t' tags with strike style", function() {
 
             const xml = `
             <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
@@ -333,7 +333,7 @@ describe("Array", function() {
             assert.equal(result.body, "~~du texte barré~~")
         })
         
-        it("should handle 'w:t' tags with underline style", function() {
+        it("body: should handle 'w:t' tags with underline style", function() {
 
             const xml = `
             <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
@@ -352,7 +352,7 @@ describe("Array", function() {
             assert.equal(result.body, "du texte souligné")
         })
         
-        it("should handle 'w:p' tags with many 'w:t' tags", function() {
+        it("body: should handle 'w:p' tags with many 'w:t' tags", function() {
 
             const xml = `
             <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
@@ -374,7 +374,7 @@ describe("Array", function() {
             assert.equal(result.body, "Voici _du texte en italique_")
         })
         
-        it("should handle 'w:t' tags with vertAlign style", function() {
+        it("body: should handle 'w:t' tags with vertAlign style", function() {
 
             const xml = `
             <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
@@ -399,7 +399,7 @@ describe("Array", function() {
             assert.equal(result.body, "La Nième fois")
         })
         
-        it("should handle 'w:t' tags with vertAlign (edge case)", function() {
+        it("body: should handle 'w:t' tags with vertAlign (edge case)", function() {
 
             const xml = `
             <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
@@ -421,7 +421,7 @@ describe("Array", function() {
             assert.equal(result.body, "ième fois")
         })
         
-        it("should handle 'w:t' tags with vertAlign (edge case 2)", function() {
+        it("body: should handle 'w:t' tags with vertAlign (edge case 2)", function() {
 
             const xml = `
             <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
@@ -443,7 +443,7 @@ describe("Array", function() {
             assert.equal(result.body, "La Nième")
         })
         
-        it("should handle 'w:t' tags with vertAlign (edge case 3)", function() {
+        it("body: should handle 'w:t' tags with vertAlign (edge case 3)", function() {
 
             const xml = `
             <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
@@ -471,7 +471,7 @@ describe("Array", function() {
             assert.equal(result.body, "La Nième ième")
         })
         
-        it("should handle 'w:t' tags with content starting with .", function() {
+        it("body: should handle 'w:t' tags with content starting with .", function() {
 
             const xml = `
             <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
@@ -490,7 +490,39 @@ describe("Array", function() {
             assert.equal(result.body, "La fin.")
         })
         
-        it("should transform inline styles described as xml to markdown", function() {
+        it("body: should handle MonParagraphe style", function() {
+
+            const xml = `
+            <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
+                <w:pPr>
+                    <w:pStyle w:val="MonParagraphe"/>
+                </w:pPr>
+                <w:r>
+                    <w:t xml:space="preserve">Voici </w:t>
+                </w:r>
+            </w:p>`
+
+            const result = dispatch(xml)
+            assert.equal(result.body, "Voici")
+        })
+        
+        it("body: should handle MaCitation style", function() {
+
+            const xml = `
+            <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
+                <w:pPr>
+                    <w:pStyle w:val="MaCitation"/>
+                </w:pPr>
+                <w:r>
+                    <w:t xml:space="preserve">Voici </w:t>
+                </w:r>
+            </w:p>`
+
+            const result = dispatch(xml)
+            assert.equal(result.body, "> Voici")
+        })
+        
+        it("body: should transform inline styles described as xml to markdown", function() {
 
             const xml = `
             <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">

@@ -160,12 +160,17 @@ const handleTitleParagraph = function(obj) {
 const handleTextParagraph = function(obj) {
 
     /**
-     * This will be used later
+     * Handles `MaCitation` paragraph's style
      */
+    let body = ""
+    if (obj.children[0].children[0].attributes["w:val"] === "MaCitation") {
+        body += "> "
+    }
+
     let children = obj.children.filter(node => node.name === "w:r")
 
     /**
-     * Detects superscript and subscript
+     * Detects superscript and subscript (will be managed later)
      */
     let combine = children.map(node => {
         if (node.children.length === 2
@@ -229,7 +234,7 @@ const handleTextParagraph = function(obj) {
     }
 
     /**
-     * Handles superscript and subscript by combining children
+     * Handles superscript and subscript as well as final dots by combining children
      */
     if (children.length > 1) {
         let combinedChildren = []
@@ -249,7 +254,7 @@ const handleTextParagraph = function(obj) {
     /**
      * Clean and returns as a string
      */
-    const body = children.map(node => node.trim())
+    body += children.map(node => node.trim())
         .filter(node => node !== "")
         .join(" ")
         
