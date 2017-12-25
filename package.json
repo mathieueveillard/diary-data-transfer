@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/mathieueveillard/diary#readme",
   "dependencies": {
+    "request": "^2.83.0",
     "xml-parser": "^1.2.1"
   },
   "devDependencies": {

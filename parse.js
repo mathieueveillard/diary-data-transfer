@@ -60,6 +60,9 @@ const handleDateParagraph = function(obj, year) {
 
     let grandChildren = children.map(child => child.children.filter(node => node.name === "w:t")[0])
 
+    /**
+     * Find day, hours and minutes
+     */
     const numbers = (grandChildren.map(child => child.content)
         .join(" ")
         .match(/\d*/g) || [])
