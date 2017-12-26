@@ -1,14 +1,9 @@
-const parse = require('xml-parser')
-
-
 /**
  * A main function that parses xml and dispatches to the appropriate handling function.
  * Returns the paragraph as an object, either `{date}`, `{title}` or `{body}`
- * @param {*} xml The paragraph described as an xml document
+ * @param {*} obj The object resulting from `parse(xml)`
  */
-export const dispatch = function(xml, year) {
-
-    const obj = parse(xml).root
+export const dispatch = function(obj, year) {
 
     /**
      * Returns null for non-paragraphs or empty paragraphs
@@ -120,7 +115,7 @@ const handleDateParagraph = function(obj, year) {
                 "novembre",
                 "decembre"
             ]
-            return MONTHS.indexOf(s) + 1
+            return MONTHS.indexOf(s)
         })
 
     if (months.length > 0) {
@@ -142,16 +137,17 @@ const handleDateParagraph = function(obj, year) {
  */
 const handleTitleParagraph = function(obj) {
 
-    let children = obj.children.filter(node => node.name === "w:r")
-    switch (children.length) {
-        case 1:
-            return {title: children[0].children[0].content}
-            break
+    let title = ""
 
-        case 0:
-        default:
-            return null
-            break
+    title += obj.children.filter(node => node.name === "w:r")
+        .map(child => child.children[0].content.trim())
+        .filter(s => s !== "")
+        .join(" ")
+    
+    if (title === "") {
+        return null
+    } else {
+        return {title}
     }
 }
 
@@ -260,6 +256,10 @@ const handleTextParagraph = function(obj) {
     body += children.map(node => node.trim())
         .filter(node => node !== "")
         .join(" ")
-        
-    return {body}
+    
+    if (body === "") {
+        return null
+    } else {
+        return {body}
+    }
 }

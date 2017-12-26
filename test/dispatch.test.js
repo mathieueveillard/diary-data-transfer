@@ -1,11 +1,13 @@
-import {dispatch} from "../parse"
+import parse from "xml-parser"
+import {dispatch} from "../src/dispatch"
 import assert from "assert"
 
 describe("#dispatch()", function() {
 
     it("should ignore non-paragraphs", function() {
         const xml = `<nothing/>`
-        const result = dispatch(xml)
+        const obj = parse(xml).root
+        const result = dispatch(obj)
         assert.equal(result, null)
     })
     
@@ -18,7 +20,8 @@ describe("#dispatch()", function() {
             </w:pPr>
         </w:p>`
 
-        const result = dispatch(xml)
+        const obj = parse(xml).root
+        const result = dispatch(obj)
         assert.equal(result, null)
     })
     
@@ -35,7 +38,8 @@ describe("#dispatch()", function() {
             </w:r>
         </w:p>`
 
-        const result = dispatch(xml)
+        const obj = parse(xml).root
+        const result = dispatch(obj)
         assert.equal(result.date.day, 1)
     })
     
@@ -51,7 +55,8 @@ describe("#dispatch()", function() {
             </w:r>
         </w:p>`
 
-        const result = dispatch(xml)
+        const obj = parse(xml).root
+        const result = dispatch(obj)
         assert.equal(result.date.day, 1)
     })
     
@@ -67,8 +72,9 @@ describe("#dispatch()", function() {
             </w:r>
         </w:p>`
 
-        const result = dispatch(xml)
-        assert.equal(result.date.month, 2)
+        const obj = parse(xml).root
+        const result = dispatch(obj)
+        assert.equal(result.date.month, 1)
     })
     
     it("date: should set year according to argument", function() {
@@ -83,7 +89,8 @@ describe("#dispatch()", function() {
             </w:r>
         </w:p>`
 
-        const result = dispatch(xml, 2016)
+        const obj = parse(xml).root
+        const result = dispatch(obj, 2016)
         assert.equal(result.date.year, 2016)
     })
     
@@ -99,7 +106,8 @@ describe("#dispatch()", function() {
             </w:r>
         </w:p>`
 
-        const result = dispatch(xml)
+        const obj = parse(xml).root
+        const result = dispatch(obj)
         assert.equal(result.date.year, (new Date()).getFullYear())
     })
     
@@ -161,9 +169,10 @@ describe("#dispatch()", function() {
             </w:r>
         </w:p>`
 
-        const result = dispatch(xml, 2016)
+        const obj = parse(xml).root
+        const result = dispatch(obj, 2016)
         assert.equal(result.date.day, 1)
-        assert.equal(result.date.month, 2)
+        assert.equal(result.date.month, 1)
         assert.equal(result.date.year, 2016)
         assert.equal(result.date.hours, 23)
         assert.equal(result.date.minutes, 54)
@@ -183,7 +192,8 @@ describe("#dispatch()", function() {
             <w:bookmarkEnd w:id="2"/>
         </w:p>`
 
-        const result = dispatch(xml)
+        const obj = parse(xml).root
+        const result = dispatch(obj)
         assert.equal(result.title, "Bla bla")
     })
     
@@ -198,7 +208,8 @@ describe("#dispatch()", function() {
             <w:bookmarkEnd w:id="2"/>
         </w:p>`
 
-        const result = dispatch(xml)
+        const obj = parse(xml).root
+        const result = dispatch(obj)
         assert.equal(result, null)
     })
     
@@ -211,16 +222,17 @@ describe("#dispatch()", function() {
             </w:pPr>
             <w:bookmarkStart w:id="2" w:name="_Toc492375987"/>
             <w:r>
-                <w:t>Bla bla</w:t>
+                <w:t>Mon </w:t>
             </w:r>
             <w:r>
-                <w:t>Bla bla</w:t>
+                <w:t>titre</w:t>
             </w:r>
             <w:bookmarkEnd w:id="2"/>
         </w:p>`
 
-        const result = dispatch(xml)
-        assert.equal(result, null)
+        const obj = parse(xml).root
+        const result = dispatch(obj)
+        assert.equal(result.title, "Mon titre")
     })
     
     it("body: should ignore 'w:t' tags with no child tag", function() {
@@ -235,8 +247,9 @@ describe("#dispatch()", function() {
             </w:r>
         </w:p>`
 
-        const result = dispatch(xml)
-        assert.equal(result.body, "")
+        const obj = parse(xml).root
+        const result = dispatch(obj)
+        assert.equal(result, null)
     })
     
     it("body: should ignore 'w:t' tags with more than 2 child tags", function() {
@@ -255,8 +268,9 @@ describe("#dispatch()", function() {
             </w:r>
         </w:p>`
 
-        const result = dispatch(xml)
-        assert.equal(result.body, "")
+        const obj = parse(xml).root
+        const result = dispatch(obj)
+        assert.equal(result, null)
     })
     
     it("body: should handle 'w:t' tags if no inline style is associated", function() {
@@ -271,7 +285,8 @@ describe("#dispatch()", function() {
             </w:r>
         </w:p>`
 
-        const result = dispatch(xml)
+        const obj = parse(xml).root
+        const result = dispatch(obj)
         assert.equal(result.body, "Voici")
     })
     
@@ -290,7 +305,8 @@ describe("#dispatch()", function() {
             </w:r>
         </w:p>`
 
-        const result = dispatch(xml)
+        const obj = parse(xml).root
+        const result = dispatch(obj)
         assert.equal(result.body, "_du texte en italique_")
     })
     
@@ -309,7 +325,8 @@ describe("#dispatch()", function() {
             </w:r>
         </w:p>`
 
-        const result = dispatch(xml)
+        const obj = parse(xml).root
+        const result = dispatch(obj)
         assert.equal(result.body, "__du texte en gras__")
     })
     
@@ -328,7 +345,8 @@ describe("#dispatch()", function() {
             </w:r>
         </w:p>`
 
-        const result = dispatch(xml)
+        const obj = parse(xml).root
+        const result = dispatch(obj)
         assert.equal(result.body, "~~du texte barré~~")
     })
     
@@ -347,7 +365,8 @@ describe("#dispatch()", function() {
             </w:r>
         </w:p>`
 
-        const result = dispatch(xml)
+        const obj = parse(xml).root
+        const result = dispatch(obj)
         assert.equal(result.body, "du texte souligné")
     })
     
@@ -369,7 +388,8 @@ describe("#dispatch()", function() {
             </w:r>
         </w:p>`
 
-        const result = dispatch(xml)
+        const obj = parse(xml).root
+        const result = dispatch(obj)
         assert.equal(result.body, "Voici _du texte en italique_")
     })
     
@@ -394,7 +414,8 @@ describe("#dispatch()", function() {
             </w:r>
         </w:p>`
 
-        const result = dispatch(xml)
+        const obj = parse(xml).root
+        const result = dispatch(obj)
         assert.equal(result.body, "La Nième fois")
     })
     
@@ -416,7 +437,8 @@ describe("#dispatch()", function() {
             </w:r>
         </w:p>`
 
-        const result = dispatch(xml)
+        const obj = parse(xml).root
+        const result = dispatch(obj)
         assert.equal(result.body, "ième fois")
     })
     
@@ -438,7 +460,8 @@ describe("#dispatch()", function() {
             </w:r>
         </w:p>`
 
-        const result = dispatch(xml)
+        const obj = parse(xml).root
+        const result = dispatch(obj)
         assert.equal(result.body, "La Nième")
     })
     
@@ -466,7 +489,8 @@ describe("#dispatch()", function() {
             </w:r>
         </w:p>`
 
-        const result = dispatch(xml)
+        const obj = parse(xml).root
+        const result = dispatch(obj)
         assert.equal(result.body, "La Nième ième")
     })
     
@@ -485,7 +509,8 @@ describe("#dispatch()", function() {
             </w:r>
         </w:p>`
 
-        const result = dispatch(xml)
+        const obj = parse(xml).root
+        const result = dispatch(obj)
         assert.equal(result.body, "La fin.")
     })
     
@@ -501,7 +526,8 @@ describe("#dispatch()", function() {
             </w:r>
         </w:p>`
 
-        const result = dispatch(xml)
+        const obj = parse(xml).root
+        const result = dispatch(obj)
         assert.equal(result.body, "Voici")
     })
     
@@ -517,7 +543,8 @@ describe("#dispatch()", function() {
             </w:r>
         </w:p>`
 
-        const result = dispatch(xml)
+        const obj = parse(xml).root
+        const result = dispatch(obj)
         assert.equal(result.body, "> Voici")
     })
     
@@ -581,7 +608,8 @@ describe("#dispatch()", function() {
             </w:r>
         </w:p>`
 
-        const result = dispatch(xml)
+        const obj = parse(xml).root
+        const result = dispatch(obj)
         assert.equal(result.body, "Voici _du texte en italique_ et __du texte en gras__ ainsi que du texte souligné par le 1er lecteur.")
     })
 })

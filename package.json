@@ -4,6 +4,7 @@
   "description": "A simple diary app with support for Markdown and fulltext search",
   "main": "index.js",
   "scripts": {
+    "build": "babel src -d lib",
     "test": "mocha test/*.test.js --require babel-polyfill --require babel-register --watch"
   },
   "repository": {
@@ -20,8 +21,11 @@
   },
   "homepage": "https://github.com/mathieueveillard/diary#readme",
   "dependencies": {
+    "command-line-args": "^4.0.7",
+    "command-line-usage": "^4.0.2",
     "request": "^2.83.0",
-    "xml-parser": "^1.2.1"
+    "xml-parser": "^1.2.1",
+    "xml2js": "^0.4.19"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

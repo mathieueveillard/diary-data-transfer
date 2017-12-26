@@ -16,7 +16,7 @@ export const assemble = function(parsed) {
             if (isNaN(obj.date)) {
                 date = (new Date(
                     obj.date.year,
-                    obj.date.month - 1,
+                    obj.date.month,
                     obj.date.day,
                     obj.date.hours,
                     obj.date.minutes

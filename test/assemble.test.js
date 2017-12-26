@@ -1,4 +1,4 @@
-import {assemble} from "../assemble"
+import {assemble} from "../src/assemble"
 import assert from "assert"
 
 describe("#assemble()", function() {
@@ -8,7 +8,7 @@ describe("#assemble()", function() {
             {
                 date: {
                     year: 2017,
-                    month: 12,
+                    month: 11,
                     day: 23,
                     hours: 19,
                     minutes: 30
@@ -17,7 +17,11 @@ describe("#assemble()", function() {
             {title: "Mon titre"},
             {body: "Lorem ipsum dolor sit amet"},
         ]
-        assert.equal(assemble(parsed)[0].date, 1514053800000)
+        assert.deepStrictEqual(assemble(parsed)[0], {
+            date: 1514053800000,
+            title: "Mon titre",
+            body: "Lorem ipsum dolor sit amet"
+        })
     })
 
     it("should re-assemble objects by date", function() {
@@ -31,7 +35,11 @@ describe("#assemble()", function() {
             {title: "Mon titre3"},
             {body: "Sed ut perspiciatis unde omnis iste natus"},
         ]
-        assert.equal(assemble(parsed)[1].date, 1514050100)
+        assert.deepStrictEqual(assemble(parsed)[1], {
+            date: 1514050100,
+            title: "Mon titre2",
+            body: "consectetur adipiscing elit"
+        })
     })
 
     it("should re-assemble objects by date and title", function() {
@@ -44,8 +52,11 @@ describe("#assemble()", function() {
             {title: "Mon titre3"},
             {body: "Sed ut perspiciatis unde omnis iste natus"},
         ]
-        assert.equal(assemble(parsed)[1].date, 1514050100)
-        assert.equal(assemble(parsed)[1].title, "Mon titre")
+        assert.deepStrictEqual(assemble(parsed)[1], {
+            date: 1514050100,
+            title: "Mon titre",
+            body: "consectetur adipiscing elit"
+        })
     })
 
     it("should set a default title if none is provided", function() {
@@ -53,7 +64,11 @@ describe("#assemble()", function() {
             {date: 1514050100},
             {body: "Lorem ipsum dolor sit amet"},
         ]
-        assert.equal(assemble(parsed)[0].title, "")
+        assert.deepStrictEqual(assemble(parsed)[0], {
+            date: 1514050100,
+            title: "",
+            body: "Lorem ipsum dolor sit amet"
+        })
     })
 
     it("should res-assemble objects (integration)", function() {
@@ -61,7 +76,7 @@ describe("#assemble()", function() {
             {
                 date: {
                     year: 2017,
-                    month: 12,
+                    month: 11,
                     day: 23,
                     hours: 19,
                     minutes: 30
@@ -73,7 +88,10 @@ describe("#assemble()", function() {
             {title: "Mon titre3"},
             {body: "Sed ut perspiciatis unde omnis iste natus"},
         ]
-        assert.equal(assemble(parsed)[1].date, 1514053800000)
-        assert.equal(assemble(parsed)[1].title, "")
+        assert.deepStrictEqual(assemble(parsed)[1], {
+            date: 1514053800000,
+            title: "",
+            body: "consectetur adipiscing elit"
+        })
     })
 })

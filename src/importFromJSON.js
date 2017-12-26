@@ -1,5 +1,5 @@
-const request = require("request")
-const fs = require('fs')
+import request from "request"
+import fs from "fs"
 
 const URL_ROOT = "http://localhost:4000/graphql"
 

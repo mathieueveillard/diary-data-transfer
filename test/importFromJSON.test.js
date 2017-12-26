@@ -1,4 +1,4 @@
-import {importFromJSON, importFromJSONFile} from "../importFromJSON"
+import {importFromJSON, importFromJSONFile} from "../src/importFromJSON"
 import assert from "assert"
 
 describe("#importFromJSON()", function(done) {
@@ -21,7 +21,7 @@ describe("#importFromJSON()", function(done) {
             }
         ]
         importFromJSON([entries[0]])
-        .then(entries => assert.equal(entries[0].date, 1514050100))
+        .then(result => assert.equal(result[0].date, 1514050100))
         .then(() => done())
     })
 
@@ -43,13 +43,13 @@ describe("#importFromJSON()", function(done) {
             }
         ]
         importFromJSON(entries)
-        .then(entries => assert.equal(entries.length, 3))
+        .then(result => assert.equal(result.length, 3))
         .then(() => done())
     })
 
     it("should import an array of entries from a file", function(done) {
         importFromJSONFile("test/2017.json")
-        .then(entries => assert.equal(entries.length, 3))
+        .then(result => assert.equal(result.length, 3))
         .then(() => done())
     })
 })

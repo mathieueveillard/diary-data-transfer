@@ -1,9 +1,13 @@
-import {exportToJSON} from "../exportToJSON"
+import {exportToJSON} from "../src/exportToJSON"
 import assert from "assert"
 
-describe("#exportToJSON()", function() {
+describe.skip("#exportToJSON()", function() {
 
-    it("should test", function() {
-        assert.equal(exportToJSON(), true)
+    this.timeout(60000)
+
+    it("should find 7 entries", function() {
+        const result = exportToJSON("test/2017.xml", 2017)
+        console.log(result)
+        assert.equal(result.length, 7)
     })
 })
