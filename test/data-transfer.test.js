@@ -9,7 +9,9 @@ import {
 
 import assert from "assert"
 
-describe("#transferData()", function() {
+describe("#transferData()", function(done) {
+
+    this.timeout(60000)
 
     it("should throw error if neither -e nor -i option is provided", function() {
         const options = {}
@@ -42,7 +44,7 @@ describe("#transferData()", function() {
     it("should throw error if -e option is set and -p provided with wrong file extension (2)", function() {
         const options = {
             export: true,
-            path: "Journal.doc"
+            path: "Journal.docx"
         }
         assert.throws(() => transferData(options), Error, WRONG_EXPORT_EXTENSION_ERROR)
     })
@@ -50,7 +52,7 @@ describe("#transferData()", function() {
     it("should throw error if -e option is set and -p provided with wrong file extension (3)", function() {
         const options = {
             export: true,
-            path: "Journal.test.doc"
+            path: "Journal.test.docx"
         }
         assert.throws(() => transferData(options), Error, WRONG_EXPORT_EXTENSION_ERROR)
     })
@@ -86,12 +88,23 @@ describe("#transferData()", function() {
         assert.throws(() => transferData(options), Error, WRONG_IMPORT_EXTENSION_ERROR)
     })
 
-    it("should return true if correct arguments are provided", function() {
+    it("should export data from file", function() {
         const options = {
             export: true,
-            path: "Journal\ 2017.docx"
+            path: "test/Journal\ 2017.xml",
+            year: 2017
         }
-        assert.equal(transferData(options), true)
+        assert.equal(transferData(options), "7 entries have been found and saved in test/Journal\ 2017.json")
     })
 
+    it("should import data from file", function(done) {
+        const options = {
+            import: true,
+            path: "test/Journal\ 2017.json",
+            year: 2017
+        }
+        transferData(options)
+            .then(result => assert.equal(result, "7 entries have been found and inserted"))
+            .then(() => done())
+    })
 })

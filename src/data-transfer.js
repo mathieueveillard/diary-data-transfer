@@ -1,11 +1,16 @@
 import commandLineArgs from "command-line-args"
 import getUsage from "command-line-usage"
+import {exportToJSON} from "./exportToJSON"
+import {importFromJSONFile} from "./importFromJSON"
 
-//Example: node lib/data-transfer -p Journal\ 2017.docx -e
-
-export const EXPORT_OR_IMPORT_ERROR = "One must choose either export (-e: .docx -> .json) or import (-i: .json -> diary's API)"
-export const NO_EXPORT_PATH_PROVIDED_ERROR = "A file path must be provided (*.docx) in order to export data"
-export const WRONG_EXPORT_EXTENSION_ERROR = "When exporting data, the extension of the file must be .docx"
+/**
+ * Example:
+ * node lib/data-transfer -p test.xml -e
+ * node lib/data-transfer -p test.json -i
+ */
+export const EXPORT_OR_IMPORT_ERROR = "One must choose either to export (-e: .xml -> .json) or import (-i: .json -> diary's API) data"
+export const NO_EXPORT_PATH_PROVIDED_ERROR = "A file path must be provided (*.xml) in order to export data"
+export const WRONG_EXPORT_EXTENSION_ERROR = "When exporting data, the extension of the file must be .xml"
 export const NO_IMPORT_PATH_PROVIDED_ERROR = "A file path must be provided (*.json) in order to import data"
 export const WRONG_IMPORT_EXTENSION_ERROR = "When importing data, the extension of the file must be .json"
 
@@ -18,13 +23,13 @@ const optionDefinitions = [
     },
     {
         name: "path",
-        description: "File path for export (.docx) or import (.json)",
+        description: "File path for export (.xml) or import (.json)",
         alias: "p",
         type: String
     },
     {
         name: "export",
-        description: "Export mode: .docx -> .json",
+        description: "Export mode: .xml -> .json",
         alias: "e",
         type: Boolean
     },
@@ -76,7 +81,7 @@ export const transferData = function(options) {
 
     if (options.export && options.path) {
         const substr = options.path.split(".")
-        if (substr.length <= 1 || substr[substr.length - 1] !== "docx") {
+        if (substr.length <= 1 || substr[substr.length - 1] !== "xml") {
             console.log(usage)
             throw Error(WRONG_EXPORT_EXTENSION_ERROR)
         }
@@ -98,12 +103,28 @@ export const transferData = function(options) {
     if (options.help) {
         console.log(usage)
     }
-    //console.log(options)
 
-    return true
+    //Removes extension from file path
+    let path = options.path.split(".")
+    path.splice(path.length - 1, 1)
+    path = path.join(".")
+
+    if (options.export) {
+        const paragraphs = exportToJSON(path + ".xml")
+        const confirmation = `${paragraphs.length} entries have been found and saved in ${path}.json`
+        console.log(confirmation)
+        return confirmation
+    }
+
+    if (options.import) {
+        return importFromJSONFile(path + ".json")
+            .then(result => {
+                const confirmation = `${result.length} entries have been found and inserted`
+                console.log(confirmation)
+                return confirmation        
+            })
+    }
 }
-
 /*
 const options = commandLineArgs(optionDefinitions)
-transferData(options)
-*/
+transferData(options)*/

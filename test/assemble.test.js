@@ -18,7 +18,7 @@ describe("#assemble()", function() {
             {body: "Lorem ipsum dolor sit amet"},
         ]
         assert.deepStrictEqual(assemble(parsed)[0], {
-            date: 1514053800000,
+            date: 1514053800,
             title: "Mon titre",
             body: "Lorem ipsum dolor sit amet"
         })
@@ -89,7 +89,7 @@ describe("#assemble()", function() {
             {body: "Sed ut perspiciatis unde omnis iste natus"},
         ]
         assert.deepStrictEqual(assemble(parsed)[1], {
-            date: 1514053800000,
+            date: 1514053800,
             title: "",
             body: "consectetur adipiscing elit"
         })

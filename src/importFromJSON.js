@@ -2,6 +2,7 @@ import request from "request"
 import fs from "fs"
 
 const URL_ROOT = "http://localhost:4000/graphql"
+export const FILE_PATH_ERROR = "File extension must be .json"
 
 const importSingleEntryFromJSON = function(entry) {
 
@@ -42,5 +43,14 @@ export const importFromJSON = function(entries) {
 }
 
 export const importFromJSONFile = function(path) {
-    return importFromJSON(JSON.parse(fs.readFileSync(path, "utf8")))
+
+    //Removes extension from file path
+    path = path.split(".")
+    if (path.length < 2 || path[path.length - 1] !== "json") {
+        throw Error(FILE_PATH_ERROR)
+    }
+    path.splice(path.length - 1, 1)
+    path = path.join(".")
+
+    return importFromJSON(JSON.parse(fs.readFileSync(path + ".json", "utf8")))
 }

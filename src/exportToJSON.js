@@ -3,9 +3,19 @@ import parse from "xml-parser"
 import {dispatch} from "./dispatch"
 import {assemble} from "./assemble"
 
+export const FILE_PATH_ERROR = "File extension must be .xml"
+
 export const exportToJSON = function(path, year) {
 
-    const obj = parse(fs.readFileSync(path, "utf8"))
+    //Removes extension from file path
+    path = path.split(".")
+    if (path.length < 2 || path[path.length - 1] !== "xml") {
+        throw Error(FILE_PATH_ERROR)
+    }
+    path.splice(path.length - 1, 1)
+    path = path.join(".")
+
+    const obj = parse(fs.readFileSync(path + ".xml", "utf8"))
     
     /**
      * Document hierarchy:
@@ -27,7 +37,7 @@ export const exportToJSON = function(path, year) {
 
     paragraphs = assemble(paragraphs)
 
-    fs.writeFileSync(year + ".json", JSON.stringify(paragraphs))
+    fs.writeFileSync(path + ".json", JSON.stringify(paragraphs))
     
     return paragraphs
 }
