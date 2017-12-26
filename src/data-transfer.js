@@ -110,7 +110,7 @@ export const transferData = function(options) {
     path = path.join(".")
 
     if (options.export) {
-        const paragraphs = exportToJSON(path + ".xml")
+        const paragraphs = exportToJSON(path + ".xml", options.year)
         const confirmation = `${paragraphs.length} entries have been found and saved in ${path}.json`
         console.log(confirmation)
         return confirmation
