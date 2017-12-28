@@ -64,6 +64,11 @@ const usage = getUsage(sections)
 
 export const transferData = function(options) {
 
+    if (options.help) {
+        console.log(usage)
+        return
+    }
+
     if (!options.export && !options.import) {
         console.log(usage)
         throw Error(EXPORT_OR_IMPORT_ERROR)
@@ -100,10 +105,6 @@ export const transferData = function(options) {
         }
     }
     
-    if (options.help) {
-        console.log(usage)
-    }
-
     //Removes extension from file path
     let path = options.path.split(".")
     path.splice(path.length - 1, 1)
