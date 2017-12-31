@@ -1,16 +1,16 @@
 import commandLineArgs from "command-line-args"
 import getUsage from "command-line-usage"
-import {exportToJSON} from "./exportToJSON"
-import {importFromJSONFile} from "./importFromJSON"
+import {extractEntries} from "./extract"
+import {importEntries} from "./import"
 
 /**
  * Example:
  * node lib/data-transfer -p test.xml -e
  * node lib/data-transfer -p test.json -i
  */
-export const EXPORT_OR_IMPORT_ERROR = "One must choose either to export (-e: .xml -> .json) or import (-i: .json -> diary's API) data"
-export const NO_EXPORT_PATH_PROVIDED_ERROR = "A file path must be provided (*.xml) in order to export data"
-export const WRONG_EXPORT_EXTENSION_ERROR = "When exporting data, the extension of the file must be .xml"
+export const EXTRACT_OR_IMPORT_ERROR = "One must choose either to extract (-e: .xml -> .json) or import (-i: .json -> diary's API) data"
+export const NO_EXTRACT_PATH_PROVIDED_ERROR = "A file path must be provided (*.xml) in order to extract data"
+export const WRONG_EXTRACT_EXTENSION_ERROR = "When extracting data, the extension of the file must be .xml"
 export const NO_IMPORT_PATH_PROVIDED_ERROR = "A file path must be provided (*.json) in order to import data"
 export const WRONG_IMPORT_EXTENSION_ERROR = "When importing data, the extension of the file must be .json"
 
@@ -23,13 +23,13 @@ const optionDefinitions = [
     },
     {
         name: "path",
-        description: "File path for export (.xml) or import (.json)",
+        description: "File path for extract (.xml) or import (.json)",
         alias: "p",
         type: String
     },
     {
-        name: "export",
-        description: "Export mode: .xml -> .json",
+        name: "extract",
+        description: "Extract mode: .xml -> .json",
         alias: "e",
         type: Boolean
     },
@@ -69,26 +69,26 @@ export const transferData = function(options) {
         return
     }
 
-    if (!options.export && !options.import) {
+    if (!options.extract && !options.import) {
         console.log(usage)
-        throw Error(EXPORT_OR_IMPORT_ERROR)
+        throw Error(EXTRACT_OR_IMPORT_ERROR)
     }
 
-    if (options.export && options.import) {
+    if (options.extract && options.import) {
         console.log(usage)
-        throw Error(EXPORT_OR_IMPORT_ERROR)
+        throw Error(EXTRACT_OR_IMPORT_ERROR)
     }
 
-    if (options.export && options.path === undefined) {
+    if (options.extract && options.path === undefined) {
         console.log(usage)
-        throw Error(NO_EXPORT_PATH_PROVIDED_ERROR)
+        throw Error(NO_EXTRACT_PATH_PROVIDED_ERROR)
     }
 
-    if (options.export && options.path) {
+    if (options.extract && options.path) {
         const substr = options.path.split(".")
         if (substr.length <= 1 || substr[substr.length - 1] !== "xml") {
             console.log(usage)
-            throw Error(WRONG_EXPORT_EXTENSION_ERROR)
+            throw Error(WRONG_EXTRACT_EXTENSION_ERROR)
         }
     }
     
@@ -110,8 +110,8 @@ export const transferData = function(options) {
     path.splice(path.length - 1, 1)
     path = path.join(".")
 
-    if (options.export) {
-        return exportToJSON(path + ".xml", options.year)
+    if (options.extract) {
+        return extractEntries(path + ".xml", options.year)
             .then(paragraphs => {
                 const confirmation = `${paragraphs.length} entries have been found and saved in ${path}.json`
                 console.log(confirmation)
@@ -120,7 +120,7 @@ export const transferData = function(options) {
     }
 
     if (options.import) {
-        return importFromJSONFile(path + ".json")
+        return importEntries(path + ".json")
             .then(result => {
                 const confirmation = `${result.length} entries have been found and inserted`
                 console.log(confirmation)

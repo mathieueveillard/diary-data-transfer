@@ -1,60 +1,60 @@
 import {
     transferData,
-    EXPORT_OR_IMPORT_ERROR,
-    NO_EXPORT_PATH_PROVIDED_ERROR,
-    WRONG_EXPORT_EXTENSION_ERROR,
+    EXTRACT_OR_IMPORT_ERROR,
+    EXTRACT_PATH_PROVIDED_ERROR,
+    EXTRACT_EXTENSION_ERROR,
     NO_IMPORT_PATH_PROVIDED_ERROR,
     WRONG_IMPORT_EXTENSION_ERROR
 } from "../src/data-transfer"
 
 import assert from "assert"
 
-describe("#transferData()", function(done) {
+describe("#data-transfer", function(done) {
 
     this.timeout(60000)
 
     it("should throw error if neither -e nor -i option is provided", function() {
         const options = {}
-        assert.throws(() => transferData(options), Error, EXPORT_OR_IMPORT_ERROR)
+        assert.throws(() => transferData(options), Error, EXTRACT_OR_IMPORT_ERROR)
     })
 
     it("should throw error if -e and -i options are both set to true", function() {
         const options = {
-            export: true,
+            extract: true,
             import: true
         }
-        assert.throws(() => transferData(options), Error, EXPORT_OR_IMPORT_ERROR)
+        assert.throws(() => transferData(options), Error, EXTRACT_OR_IMPORT_ERROR)
     })
 
     it("should throw error if -e option is set and no -p provided", function() {
         const options = {
-            export: true
+            extract: true
         }
-        assert.throws(() => transferData(options), Error, NO_EXPORT_PATH_PROVIDED_ERROR)
+        assert.throws(() => transferData(options), Error, EXTRACT_PATH_PROVIDED_ERROR)
     })
 
     it("should throw error if -e option is set and -p provided with wrong file extension", function() {
         const options = {
-            export: true,
+            extract: true,
             path: "Journal"
         }
-        assert.throws(() => transferData(options), Error, WRONG_EXPORT_EXTENSION_ERROR)
+        assert.throws(() => transferData(options), Error, EXTRACT_EXTENSION_ERROR)
     })
 
     it("should throw error if -e option is set and -p provided with wrong file extension (2)", function() {
         const options = {
-            export: true,
+            extract: true,
             path: "Journal.docx"
         }
-        assert.throws(() => transferData(options), Error, WRONG_EXPORT_EXTENSION_ERROR)
+        assert.throws(() => transferData(options), Error, EXTRACT_EXTENSION_ERROR)
     })
 
     it("should throw error if -e option is set and -p provided with wrong file extension (3)", function() {
         const options = {
-            export: true,
+            extract: true,
             path: "Journal.test.docx"
         }
-        assert.throws(() => transferData(options), Error, WRONG_EXPORT_EXTENSION_ERROR)
+        assert.throws(() => transferData(options), Error, EXTRACT_EXTENSION_ERROR)
     })
 
     it("should throw error if -i option is set and no -p provided", function() {
@@ -88,9 +88,9 @@ describe("#transferData()", function(done) {
         assert.throws(() => transferData(options), Error, WRONG_IMPORT_EXTENSION_ERROR)
     })
 
-    it("should export data from file", function(done) {
+    it("should extract data from file", function(done) {
         const options = {
-            export: true,
+            extract: true,
             path: "test/Journal\ 2017.xml",
             year: 2017
         }

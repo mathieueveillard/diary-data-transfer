@@ -7,7 +7,7 @@ export const NON_VALID_DATE_ERROR = "This is not a valid date format"
  * @param {*} year Year
  * @param {*} relations The `<Relationships></Relationships>` tag parsed as JSON
  */
-export const dispatch = function(obj, year, relations) {
+export const handle = function(obj, year, relations) {
     
     /**
      * Returns null for non-paragraphs or empty paragraphs

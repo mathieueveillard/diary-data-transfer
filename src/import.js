@@ -42,10 +42,11 @@ export const importFromJSON = function(entries) {
     return Promise.all(entries.map(entry => importSingleEntryFromJSON(entry)))
 }
 
-export const importFromJSONFile = function(path) {
+export const importEntries = function(path) {
 
     //Removes extension from file path
     path = path.split(".")
+        .filter(s => s)
     if (path.length < 2 || path[path.length - 1] !== "json") {
         throw Error(FILE_PATH_ERROR)
     }

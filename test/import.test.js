@@ -1,18 +1,18 @@
-import {importFromJSON, importFromJSONFile, FILE_PATH_ERROR} from "../src/importFromJSON"
+import {importEntries, importFromJSON, FILE_PATH_ERROR} from "../src/import"
 import assert from "assert"
 
-describe("#importFromJSON()", function(done) {
+describe("#import", function(done) {
 
     it("should throw an error if provided with a wrong file path", function() {
-        assert.throws(() => importFromJSON(".json", 2017), Error, FILE_PATH_ERROR)
+        assert.throws(() => importEntries(".json"), Error, FILE_PATH_ERROR)
     })
 
     it("should throw an error if provided with a wrong file path (2)", function() {
-        assert.throws(() => importFromJSON("file.jso", 2017), Error, FILE_PATH_ERROR)
+        assert.throws(() => importEntries("file.jso"), Error, FILE_PATH_ERROR)
     })
 
     it("should throw an error if provided with a wrong file path (3)", function() {
-        assert.throws(() => importFromJSON("file", 2017), Error, FILE_PATH_ERROR)
+        assert.throws(() => importEntries("file"), Error, FILE_PATH_ERROR)
     })
 
     it("should import one entry", function(done) {
@@ -60,7 +60,7 @@ describe("#importFromJSON()", function(done) {
     })
 
     it("should import an array of entries from a file", function(done) {
-        importFromJSONFile("test/Journal\ 2017.json")
+        importEntries("test/Journal\ 2017.json")
         .then(result => assert.equal(result.length, 6))
         .then(() => done())
     })

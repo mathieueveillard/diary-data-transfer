@@ -1,7 +1,7 @@
 import {assemble} from "../src/assemble"
 import assert from "assert"
 
-describe("#assemble()", function() {
+describe("#assemble", function() {
 
     it("should calculate timestamp based on date object", function() {
         const parsed = [

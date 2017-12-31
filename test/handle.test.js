@@ -1,13 +1,13 @@
 import parse from "xml-parser"
-import {dispatch, NON_VALID_DATE_ERROR} from "../src/dispatch"
+import {handle, NON_VALID_DATE_ERROR} from "../src/handle"
 import assert from "assert"
 
-describe("#dispatch()", function() {
+describe("#handle", function() {
 
     it("should ignore non-paragraphs", function() {
         const xml = `<nothing/>`
         const obj = parse(xml).root
-        const result = dispatch(obj)
+        const result = handle(obj)
         assert.equal(result, null)
     })
     
@@ -21,7 +21,7 @@ describe("#dispatch()", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        const result = dispatch(obj)
+        const result = handle(obj)
         assert.equal(result, null)
     })
     
@@ -39,7 +39,7 @@ describe("#dispatch()", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        const result = dispatch(obj, 2017)
+        const result = handle(obj, 2017)
         assert.deepStrictEqual(result.date, {
             day: 1,
             month: 1,
@@ -60,7 +60,7 @@ describe("#dispatch()", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        const result = dispatch(obj, 2017)
+        const result = handle(obj, 2017)
         assert.deepStrictEqual(result.date, {
             day: 1,
             month: 0,
@@ -81,7 +81,7 @@ describe("#dispatch()", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        assert.throws(() => dispatch(obj), Error, NON_VALID_DATE_ERROR)
+        assert.throws(() => handle(obj), Error, NON_VALID_DATE_ERROR)
     })
     
     it("date: should throw error when day is missing", function() {
@@ -97,7 +97,7 @@ describe("#dispatch()", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        assert.throws(() => dispatch(obj), Error, NON_VALID_DATE_ERROR)
+        assert.throws(() => handle(obj), Error, NON_VALID_DATE_ERROR)
     })
     
     it("date: should throw error when month is missing", function() {
@@ -113,7 +113,7 @@ describe("#dispatch()", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        assert.throws(() => dispatch(obj), Error, NON_VALID_DATE_ERROR)
+        assert.throws(() => handle(obj), Error, NON_VALID_DATE_ERROR)
     })
     
     it("date: should throw error when too many numbers are provided", function() {
@@ -129,7 +129,7 @@ describe("#dispatch()", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        assert.throws(() => dispatch(obj), Error, NON_VALID_DATE_ERROR)
+        assert.throws(() => handle(obj), Error, NON_VALID_DATE_ERROR)
     })
     
     it("date: should handle incomplete dates (hours or minutes)", function() {
@@ -145,7 +145,7 @@ describe("#dispatch()", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        const result = dispatch(obj, 2017)
+        const result = handle(obj, 2017)
         assert.deepStrictEqual(result.date, {
             day: 21,
             month: 0,
@@ -166,7 +166,7 @@ describe("#dispatch()", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        const result = dispatch(obj, 2017)
+        const result = handle(obj, 2017)
         assert.deepStrictEqual(result.date, {
             day: 2,
             month: 1,
@@ -187,7 +187,7 @@ describe("#dispatch()", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        const result = dispatch(obj, 2016)
+        const result = handle(obj, 2016)
         assert.deepStrictEqual(result.date, {
             day: 1,
             month: 2,
@@ -208,7 +208,7 @@ describe("#dispatch()", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        const result = dispatch(obj)
+        const result = handle(obj)
         assert.deepStrictEqual(result.date, {
             day: 1,
             month: 2,
@@ -275,7 +275,7 @@ describe("#dispatch()", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        const result = dispatch(obj, 2016)
+        const result = handle(obj, 2016)
         assert.deepStrictEqual(result.date, {
             day: 1,
             month: 1,
@@ -300,7 +300,7 @@ describe("#dispatch()", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        const result = dispatch(obj)
+        const result = handle(obj)
         assert.equal(result.title, "Bla bla")
     })
     
@@ -316,7 +316,7 @@ describe("#dispatch()", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        const result = dispatch(obj)
+        const result = handle(obj)
         assert.equal(result, null)
     })
     
@@ -338,7 +338,7 @@ describe("#dispatch()", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        const result = dispatch(obj)
+        const result = handle(obj)
         assert.equal(result.title, "Mon titre")
     })
     
@@ -355,7 +355,7 @@ describe("#dispatch()", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        const result = dispatch(obj)
+        const result = handle(obj)
         assert.equal(result, null)
     })
     
@@ -372,7 +372,7 @@ describe("#dispatch()", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        const result = dispatch(obj)
+        const result = handle(obj)
         assert.equal(result, null)
     })
     
@@ -393,7 +393,7 @@ describe("#dispatch()", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        const result = dispatch(obj)
+        const result = handle(obj)
         assert.equal(result, null)
     })
     
@@ -410,7 +410,7 @@ describe("#dispatch()", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        const result = dispatch(obj)
+        const result = handle(obj)
         assert.equal(result.body, "Voici")
     })
     
@@ -430,7 +430,7 @@ describe("#dispatch()", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        const result = dispatch(obj)
+        const result = handle(obj)
         assert.equal(result.body, "_du texte en italique_")
     })
     
@@ -450,7 +450,7 @@ describe("#dispatch()", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        const result = dispatch(obj)
+        const result = handle(obj)
         assert.equal(result.body, "__du texte en gras__")
     })
     
@@ -470,7 +470,7 @@ describe("#dispatch()", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        const result = dispatch(obj)
+        const result = handle(obj)
         assert.equal(result.body, "~~du texte barré~~")
     })
     
@@ -490,7 +490,7 @@ describe("#dispatch()", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        const result = dispatch(obj)
+        const result = handle(obj)
         assert.equal(result.body, "du texte souligné")
     })
     
@@ -513,7 +513,7 @@ describe("#dispatch()", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        const result = dispatch(obj)
+        const result = handle(obj)
         assert.equal(result.body, "Voici _du texte en italique_")
     })
     
@@ -539,7 +539,7 @@ describe("#dispatch()", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        const result = dispatch(obj)
+        const result = handle(obj)
         assert.equal(result.body, "La Nième fois")
     })
     
@@ -562,7 +562,7 @@ describe("#dispatch()", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        const result = dispatch(obj)
+        const result = handle(obj)
         assert.equal(result.body, "ième fois")
     })
     
@@ -585,7 +585,7 @@ describe("#dispatch()", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        const result = dispatch(obj)
+        const result = handle(obj)
         assert.equal(result.body, "La Nième")
     })
     
@@ -614,7 +614,7 @@ describe("#dispatch()", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        const result = dispatch(obj)
+        const result = handle(obj)
         assert.equal(result.body, "La Nième ième")
     })
     
@@ -634,7 +634,7 @@ describe("#dispatch()", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        const result = dispatch(obj)
+        const result = handle(obj)
         assert.equal(result.body, "La fin.")
     })
     
@@ -654,7 +654,7 @@ describe("#dispatch()", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        const result = dispatch(obj)
+        const result = handle(obj)
         assert.equal(result.body, "La fin, ou presque !")
     })
     
@@ -671,7 +671,7 @@ describe("#dispatch()", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        const result = dispatch(obj)
+        const result = handle(obj)
         assert.deepStrictEqual(result, {
             style: "MonTweet",
             body: "Voici"
@@ -691,7 +691,7 @@ describe("#dispatch()", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        const result = dispatch(obj)
+        const result = handle(obj)
         assert.deepStrictEqual(result, {
             style: "MonParagraphe",
             body: "Voici"
@@ -711,7 +711,7 @@ describe("#dispatch()", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        const result = dispatch(obj)
+        const result = handle(obj)
         assert.deepStrictEqual(result, {
             style: "MaCitation",
             body: "> Voici"
@@ -735,7 +735,7 @@ describe("#dispatch()", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        const result = dispatch(obj)
+        const result = handle(obj)
         assert.deepStrictEqual(result, {
             style: "MonParagraphe",
             body: "- Voici"
@@ -789,7 +789,7 @@ describe("#dispatch()", function() {
 
         const obj = parse(xml).root
         const relations = parse(meta).root
-        const result = dispatch(obj, 2017, relations)
+        const result = handle(obj, 2017, relations)
         assert.deepStrictEqual(result.body, "Voici un [lien hypertexte](http://www.mathieueveillard.com) qu’il est beau.")
     })
     
@@ -869,7 +869,7 @@ describe("#dispatch()", function() {
 
         const obj = parse(xml).root
         const relations = parse(meta).root
-        const result = dispatch(obj, 2017, relations)
+        const result = handle(obj, 2017, relations)
         assert.deepStrictEqual(result.body, "[Voici un 1 er gras lien hypertexte](http://www.mathieueveillard.com)")
     })
     
@@ -934,7 +934,7 @@ describe("#dispatch()", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        const result = dispatch(obj)
+        const result = handle(obj)
         assert.equal(result.body, "Voici _du texte en italique_ et __du texte en gras__ ainsi que du texte souligné par le 1er lecteur.")
     })
 })

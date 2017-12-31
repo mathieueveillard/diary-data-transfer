@@ -1,11 +1,11 @@
 import fs from "fs"
 import parse from "xml-parser"
-import {dispatch} from "./dispatch"
+import {handle} from "./handle"
 import {assemble} from "./assemble"
 
 export const FILE_PATH_ERROR = "File extension must be .xml"
 
-export const exportToJSON = function(path, year) {
+export const extractEntries = function(path, year) {
 
     //Removes extension from file path
     path = path.split(".")
@@ -57,7 +57,7 @@ export const exportToJSON = function(path, year) {
                         .children[0] //pkg:xmlData
                         .children[0] //Relationships
 
-                    let paragraphs = body.children.map(paragraph => dispatch(paragraph, year, relations))
+                    let paragraphs = body.children.map(paragraph => handle(paragraph, year, relations))
                         .filter(obj => obj)
 
                     resolve(assemble(paragraphs))
