@@ -97,22 +97,9 @@ const handleDateParagraph = function(obj, year) {
         .filter(s => s !== "")
         .map(s => {
             s = s.toLowerCase()
-            switch (s) {
-                case "février":
-                    s = "fevrier"
-                    break
-            
-                case "août":
-                    s = "aout"
-                    break
-            
-                case "décembre":
-                    s = "decembre"
-                    break
-            
-                default:
-                    break
-            }
+                .replace(/é/g, "e")
+                .replace(/û/g, "u")
+
             const MONTHS = [
                 "janvier",
                 "fevrier",
@@ -237,8 +224,7 @@ const handleTextParagraph = function(obj, relations) {
                     .map(node => node.children
                         .find(node => node.name === "w:t")
                         .content
-                        .trim()
-                    )
+                        .trim())
                     .filter(s => s !== "")
                     .join(" ")
                 
