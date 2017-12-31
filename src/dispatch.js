@@ -239,16 +239,7 @@ const handleTextParagraph = function(obj) {
     })
 
     /**
-     * Detects final dots
-     */
-    for (let i = 0; i < children.length; i++) {
-        if (children[i] !== "" && children[i].charAt(0) === ".") {
-            combine[i] = 1
-        }
-    }
-
-    /**
-     * Handles superscript and subscript as well as final dots by combining children
+     * Handles superscript and subscript by combining children
      */
     if (children.length > 1) {
         let combinedChildren = []
@@ -266,12 +257,14 @@ const handleTextParagraph = function(obj) {
     }
 
     /**
-     * Clean and returns as a string
+     * Cleans and returns as a string
      */
     body += children.map(node => node.trim())
         .filter(node => node !== "")
         .join(" ")
-    
+        .replace(/ \./g, ".")//In case a child would start with "."
+        .replace(/ ,/g, ",")//In case a child would start with ","
+
     if (body === "") {
         return null
     } else {

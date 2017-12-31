@@ -636,6 +636,26 @@ describe("#dispatch()", function() {
         assert.equal(result.body, "La fin.")
     })
     
+    it("body: should handle 'w:t' tags with content starting with ,", function() {
+
+        const xml = `
+        <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
+            <w:pPr>
+                <w:pStyle w:val="MonTweet"/>
+            </w:pPr>
+            <w:r w:rsidR="00892CFC">
+                <w:t xml:space="preserve">La fin</w:t>
+            </w:r>
+            <w:r w:rsidR="00892CFC">
+                <w:t xml:space="preserve">, ou presque !</w:t>
+            </w:r>
+        </w:p>`
+
+        const obj = parse(xml).root
+        const result = dispatch(obj)
+        assert.equal(result.body, "La fin, ou presque !")
+    })
+    
     it("body: should return paragraph style", function() {
 
         const xml = `
