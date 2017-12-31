@@ -9,46 +9,76 @@ export const exportToJSON = function(path, year) {
 
     //Removes extension from file path
     path = path.split(".")
+        .filter(s => s)
     if (path.length < 2 || path[path.length - 1] !== "xml") {
         throw Error(FILE_PATH_ERROR)
     }
     path.splice(path.length - 1, 1)
     path = path.join(".")
 
-    const obj = parse(fs.readFileSync(path + ".xml", "utf8"))
-    
-    /**
-     * Document hierarchy:
-     *  <pkg:package> (root)
-     *      <pkg:part pkg:name="/word/document.xml">
-     *          <pkg:xmlData>
-     *              <w:document>
-     *                  <w:body>
-     */
-
-    const body = (obj.root //pkg:package
-        .children.filter(child => child.attributes["pkg:name"] === "/word/document.xml"))[0] //pkg:part
-        .children[0] //pkg:xmlData
-        .children[0] //w:document
-        .children[0] //w:body
-
-    let paragraphs = body.children.map(paragraph => dispatch(paragraph, year))
-        .filter(obj => obj)
-
-    paragraphs = assemble(paragraphs)
 
     return new Promise((resolve, reject) => {
-        fs.writeFile(
-            path + ".json",
-            JSON.stringify(paragraphs).replace(/\\n/g, "\\\\n"),
+
+        fs.readFile(
+            path + ".xml",
             "utf8",
-            (err) => {
+            (err, data) => {
+
                 if (err) {
                     reject(err)
                 } else {
-                    resolve(paragraphs)
+                    /**
+                     * Document hierarchy:
+                     *  <pkg:package> (root)
+                     *      <pkg:part pkg:name="/word/document.xml">
+                     *          <pkg:xmlData>
+                     *              <w:document>
+                     *                  <w:body>
+                     */
+
+                    const obj = parse(data)
+
+                    const body = (obj.root //pkg:package
+                        .children.filter(child => child.attributes["pkg:name"] === "/word/document.xml"))[0] //pkg:part
+                        .children[0] //pkg:xmlData
+                        .children[0] //w:document
+                        .children[0] //w:body
+
+                    /**
+                     * Document hierarchy:
+                     *  <pkg:package> (root)
+                     *      <pkg:part pkg:name="/word/_rels/document.xml.rels">
+                     *          <pkg:xmlData>
+                     *              <Relationships>
+                     */
+
+                    const relations = (obj.root //pkg:package
+                        .children.filter(child => child.attributes["pkg:name"] === "/word/_rels/document.xml.rels"))[0] //pkg:part
+                        .children[0] //pkg:xmlData
+                        .children[0] //Relationships
+
+                    let paragraphs = body.children.map(paragraph => dispatch(paragraph, year, relations))
+                        .filter(obj => obj)
+
+                    resolve(assemble(paragraphs))
                 }
-            }
-        )
+            })
+    })
+
+    .then(paragraphs => {
+        return new Promise((resolve, reject) => {
+            fs.writeFile(
+                path + ".json",
+                JSON.stringify(paragraphs).replace(/\\n/g, "\\\\n"),
+                "utf8",
+                (err) => {
+                    if (err) {
+                        reject(err)
+                    } else {
+                        resolve(paragraphs)
+                    }
+                }
+            )
+        })
     })
 }

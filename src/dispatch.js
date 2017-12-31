@@ -3,10 +3,12 @@ export const NON_VALID_DATE_ERROR = "This is not a valid date format"
 /**
  * A main function that parses xml and dispatches to the appropriate handling function.
  * Returns the paragraph as an object, either `{date}`, `{title}` or `{body}`
- * @param {*} obj The object resulting from `parse(xml)`
+ * @param {*} obj An XML object parsed as JSON
+ * @param {*} year Year
+ * @param {*} relations The `<Relationships></Relationships>` tag parsed as JSON
  */
-export const dispatch = function(obj, year) {
-
+export const dispatch = function(obj, year, relations) {
+    
     /**
      * Returns null for non-paragraphs or empty paragraphs
      */
@@ -34,7 +36,7 @@ export const dispatch = function(obj, year) {
             case "MonTweet":
             case "MonParagraphe":
             case "MaCitation":
-                return handleTextParagraph(obj)
+                return handleTextParagraph(obj, relations)
                 break
             
             default:
@@ -47,7 +49,7 @@ export const dispatch = function(obj, year) {
 
 /**
  * A function that handles date paragraphs
- * @param {*} obj The object resulting from `parse(xml)`
+ * @param {*} obj An XML object parsed as JSON
  */
 const handleDateParagraph = function(obj, year) {
 
@@ -147,7 +149,7 @@ const handleDateParagraph = function(obj, year) {
 
 /**
  * A function that handles title paragraphs
- * @param {*} obj The object resulting from `parse(xml)`
+ * @param {*} obj An XML object parsed as JSON
  */
 const handleTitleParagraph = function(obj) {
 
@@ -168,9 +170,10 @@ const handleTitleParagraph = function(obj) {
 
 /**
  * A function that handles text paragraphs (MonTweet, MonParagraphe, MaCitation)
- * @param {*} obj The object resulting from `parse(xml)`
+ * @param {*} obj An XML object parsed as JSON
+ * @param {*} relations The `<Relationships></Relationships>` tag parsed as JSON
  */
-const handleTextParagraph = function(obj) {
+const handleTextParagraph = function(obj, relations) {
 
     let body = ""
 
@@ -193,7 +196,62 @@ const handleTextParagraph = function(obj) {
         body += "- "
     }
 
-     let children = obj.children.filter(node => node.name === "w:r")
+    /**
+     * Filters on elements and handles hyperlinks
+     */
+    let children = obj.children
+        .filter(node => node.name === "w:r" || node.name === "w:hyperlink")
+        .map(node => {
+
+            if (node.name === "w:r") {
+                return node
+            }
+            else if (node.name === "w:hyperlink") {
+
+                /*
+                    <w:hyperlink r:id="rId5" w:history="1">
+                        <w:r w:rsidRPr="006D35AA">
+                            <w:rPr>
+                                <w:rStyle w:val="Lienhypertexte"/>
+                            </w:rPr>
+                            <w:t>lien hypertexte</w:t>
+                        </w:r>
+                    </w:hyperlink>
+
+                    Should transform in
+
+                    <w:r>
+                        <w:t>[lien hypertexte](URL)<w:t>
+                    </w:r>
+                */
+
+                //Get URL
+                const id = node.attributes["r:id"]
+                const url = relations.children
+                    .find(node => node.name === "Relationship" && node.attributes["Id"] === id)
+                    .attributes["Target"]
+
+                //Get displayed text
+                const text = node.children
+                    .filter(node => node.name === "w:r")
+                    .map(node => node.children
+                        .find(node => node.name === "w:t")
+                        .content
+                        .trim()
+                    )
+                    .filter(s => s !== "")
+                    .join(" ")
+                
+                return {
+                    name: "w:r",
+                    children: [{
+                        name: "w:t",
+                        content: `[${text}](${url})`
+                    }]
+                    
+                }
+            }
+        })
 
     /**
      * Detects superscript and subscript (will be managed later)

@@ -742,7 +742,138 @@ describe("#dispatch()", function() {
         })
     })
     
-    it("body: should handle text paragraphs", function() {
+    it("body: should handle hyperlinks", function() {
+
+        const meta = `
+        <Relationships>
+            <Relationship Id="rId5" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="http://www.mathieueveillard.com" TargetMode="External"/>
+        </Relationships>`
+
+        const xml = `
+        <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
+            <w:pPr>
+                <w:pStyle w:val="MonTweet"/>
+            </w:pPr>
+            <w:r>
+                <w:t xml:space="preserve">Voici un </w:t>
+            </w:r>
+            <w:hyperlink r:id="rId5" w:history="1">
+                <w:proofErr w:type="spellStart"/>
+                <w:r w:rsidRPr="00A2689A">
+                    <w:rPr>
+                        <w:rStyle w:val="Lienhypertexte"/>
+                    </w:rPr>
+                    <w:t>lien</w:t>
+                </w:r>
+                <w:proofErr w:type="spellEnd"/>
+                <w:r w:rsidRPr="00A2689A">
+                    <w:rPr>
+                        <w:rStyle w:val="Lienhypertexte"/>
+                    </w:rPr>
+                    <w:t xml:space="preserve"> </w:t>
+                </w:r>
+                <w:proofErr w:type="spellStart"/>
+                <w:r w:rsidRPr="00A2689A">
+                    <w:rPr>
+                        <w:rStyle w:val="Lienhypertexte"/>
+                    </w:rPr>
+                    <w:t>hypertexte</w:t>
+                </w:r>
+            </w:hyperlink>
+            <w:bookmarkStart w:id="0" w:name="_GoBack"/>
+            <w:bookmarkEnd w:id="0"/>
+            <w:r>
+                <w:t xml:space="preserve"> qu’il est beau.</w:t>
+            </w:r>
+        </w:p>`
+
+        const obj = parse(xml).root
+        const relations = parse(meta).root
+        const result = dispatch(obj, 2017, relations)
+        assert.deepStrictEqual(result.body, "Voici un [lien hypertexte](http://www.mathieueveillard.com) qu’il est beau.")
+    })
+    
+    it("body: should ignore inline superscripts in hyperlinks", function() {
+
+        const meta = `
+        <Relationships>
+            <Relationship Id="rId9" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="http://www.mathieueveillard.com" TargetMode="External"/>
+        </Relationships>`
+
+        const xml = `
+        <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
+            <w:pPr>
+                <w:pStyle w:val="MonTweet"/>
+            </w:pPr>
+            <w:hyperlink r:id="rId9" w:history="1">
+                <w:proofErr w:type="spellStart"/>
+                <w:r w:rsidRPr="00A2689A">
+                    <w:rPr>
+                        <w:rStyle w:val="Lienhypertexte"/>
+                    </w:rPr>
+                    <w:t>Voici un</w:t>
+                </w:r>
+                <w:proofErr w:type="spellEnd"/>
+                <w:r w:rsidRPr="00A2689A">
+                    <w:rPr>
+                        <w:rStyle w:val="Lienhypertexte"/>
+                    </w:rPr>
+                    <w:t xml:space="preserve"> </w:t>
+                </w:r>
+                <w:r w:rsidR="00723CB1">
+                    <w:rPr>
+                        <w:rStyle w:val="Lienhypertexte"/>
+                    </w:rPr>
+                    <w:t>1</w:t>
+                </w:r>
+                <w:r w:rsidR="00F03F7F">
+                    <w:rPr>
+                        <w:rStyle w:val="Lienhypertexte"/>
+                        <w:vertAlign w:val="superscript"/>
+                    </w:rPr>
+                    <w:t>er</w:t>
+                </w:r>
+                <w:r w:rsidR="00723CB1">
+                    <w:rPr>
+                        <w:rStyle w:val="Lienhypertexte"/>
+                    </w:rPr>
+                    <w:t xml:space="preserve"> </w:t>
+                </w:r>
+                <w:bookmarkStart w:id="0" w:name="_GoBack"/>
+                <w:proofErr w:type="spellStart"/>
+                <w:r w:rsidR="00F03F7F" w:rsidRPr="00F03F7F">
+                    <w:rPr>
+                        <w:rStyle w:val="Lienhypertexte"/>
+                        <w:b/>
+                    </w:rPr>
+                    <w:t>gras</w:t>
+                </w:r>
+                <w:bookmarkEnd w:id="0"/>
+                <w:proofErr w:type="spellEnd"/>
+                <w:r w:rsidR="00F03F7F">
+                    <w:rPr>
+                        <w:rStyle w:val="Lienhypertexte"/>
+                    </w:rPr>
+                    <w:t xml:space="preserve"> </w:t>
+                </w:r>
+                <w:proofErr w:type="spellStart"/>
+                <w:r w:rsidRPr="00A2689A">
+                    <w:rPr>
+                        <w:rStyle w:val="Lienhypertexte"/>
+                    </w:rPr>
+                    <w:t>lien hypertexte</w:t>
+                </w:r>
+                <w:proofErr w:type="spellEnd"/>
+            </w:hyperlink>
+        </w:p>`
+
+        const obj = parse(xml).root
+        const relations = parse(meta).root
+        const result = dispatch(obj, 2017, relations)
+        assert.deepStrictEqual(result.body, "[Voici un 1 er gras lien hypertexte](http://www.mathieueveillard.com)")
+    })
+    
+   it("body: should handle text paragraphs", function() {
 
         const xml = `
         <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
