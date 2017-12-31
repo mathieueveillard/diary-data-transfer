@@ -71,7 +71,7 @@ describe("#assemble()", function() {
         })
     })
 
-    it("should res-assemble objects (integration)", function() {
+    it("should re-assemble objects (integration)", function() {
         const parsed = [
             {
                 date: {

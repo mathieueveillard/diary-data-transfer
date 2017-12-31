@@ -1,3 +1,5 @@
+export const NON_VALID_DATE_ERROR = "This is not a valid date format"
+
 /**
  * A main function that parses xml and dispatches to the appropriate handling function.
  * Returns the paragraph as an object, either `{date}`, `{title}` or `{body}`
@@ -64,15 +66,23 @@ const handleDateParagraph = function(obj, year) {
         .filter(s => s !== "")
         .map(s => parseInt(s))
 
-    if (numbers.length > 0) {
+    if (numbers.length === 0 || numbers.length > 3) {
+        throw Error(NON_VALID_DATE_ERROR)
+    }
+
+    if (numbers.length === 1) {
         date.day = numbers[0]
     }
 
-    if (numbers.length > 1) {
-        date.hours = numbers[1]
+    if (numbers.length === 2) {
+        //Day & hours or day & minutes won't happen due to good data quality
+        date.hours = numbers[0]
+        date.minutes = numbers[1]
     }
 
-    if (numbers.length > 2) {
+    if (numbers.length === 3) {
+        date.day = numbers[0]
+        date.hours = numbers[1]
         date.minutes = numbers[2]
     }
 
@@ -127,7 +137,11 @@ const handleDateParagraph = function(obj, year) {
      */
     date.year = year || (new Date()).getFullYear()
 
-    return {date}
+    if (date.day === undefined || date.month === undefined) {
+        throw Error(NON_VALID_DATE_ERROR)
+    } else {
+        return {date}
+    }
 }
 
 

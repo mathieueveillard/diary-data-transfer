@@ -1,5 +1,5 @@
 import parse from "xml-parser"
-import {dispatch} from "../src/dispatch"
+import {dispatch, NON_VALID_DATE_ERROR} from "../src/dispatch"
 import assert from "assert"
 
 describe("#dispatch()", function() {
@@ -34,13 +34,17 @@ describe("#dispatch()", function() {
             </w:pPr>
             <w:r>
                 <w:lastRenderedPageBreak/>
-                <w:t>1</w:t>
+                <w:t>1er février</w:t>
             </w:r>
         </w:p>`
 
         const obj = parse(xml).root
-        const result = dispatch(obj)
-        assert.equal(result.date.day, 1)
+        const result = dispatch(obj, 2017)
+        assert.deepStrictEqual(result.date, {
+            day: 1,
+            month: 1,
+            year: 2017
+        })
     })
     
     it("date: should ignore non-numeric contents", function() {
@@ -51,13 +55,102 @@ describe("#dispatch()", function() {
                 <w:pStyle w:val="MaDate"/>
             </w:pPr>
             <w:r>
-                <w:t>Dimanche 1</w:t>
+                <w:t>Dimanche 1er janvier</w:t>
             </w:r>
         </w:p>`
 
         const obj = parse(xml).root
-        const result = dispatch(obj)
-        assert.equal(result.date.day, 1)
+        const result = dispatch(obj, 2017)
+        assert.deepStrictEqual(result.date, {
+            day: 1,
+            month: 0,
+            year: 2017
+        })
+    })
+    
+    it("date: should throw error on empty paragraphs", function() {
+
+        const xml = `
+        <w:p w14:paraId="0D9716AF" w14:textId="3F66E9E7" w:rsidR="002C6004" w:rsidRDefault="00477B28" w:rsidP="0011353B">
+            <w:pPr>
+                <w:pStyle w:val="MaDate"/>
+            </w:pPr>
+            <w:r>
+                <w:t></w:t>
+            </w:r>
+        </w:p>`
+
+        const obj = parse(xml).root
+        assert.throws(() => dispatch(obj), Error, NON_VALID_DATE_ERROR)
+    })
+    
+    it("date: should throw error when day is missing", function() {
+
+        const xml = `
+        <w:p w14:paraId="0D9716AF" w14:textId="3F66E9E7" w:rsidR="002C6004" w:rsidRDefault="00477B28" w:rsidP="0011353B">
+            <w:pPr>
+                <w:pStyle w:val="MaDate"/>
+            </w:pPr>
+            <w:r>
+                <w:t>janvier 10:11</w:t>
+            </w:r>
+        </w:p>`
+
+        const obj = parse(xml).root
+        assert.throws(() => dispatch(obj), Error, NON_VALID_DATE_ERROR)
+    })
+    
+    it("date: should throw error when month is missing", function() {
+
+        const xml = `
+        <w:p w14:paraId="0D9716AF" w14:textId="3F66E9E7" w:rsidR="002C6004" w:rsidRDefault="00477B28" w:rsidP="0011353B">
+            <w:pPr>
+                <w:pStyle w:val="MaDate"/>
+            </w:pPr>
+            <w:r>
+                <w:t>21 10:11</w:t>
+            </w:r>
+        </w:p>`
+
+        const obj = parse(xml).root
+        assert.throws(() => dispatch(obj), Error, NON_VALID_DATE_ERROR)
+    })
+    
+    it("date: should throw error when too many numbers are provided", function() {
+
+        const xml = `
+        <w:p w14:paraId="0D9716AF" w14:textId="3F66E9E7" w:rsidR="002C6004" w:rsidRDefault="00477B28" w:rsidP="0011353B">
+            <w:pPr>
+                <w:pStyle w:val="MaDate"/>
+            </w:pPr>
+            <w:r>
+                <w:t>21 février 2017 10:11</w:t>
+            </w:r>
+        </w:p>`
+
+        const obj = parse(xml).root
+        assert.throws(() => dispatch(obj), Error, NON_VALID_DATE_ERROR)
+    })
+    
+    it("date: should handle incomplete dates (hours or minutes)", function() {
+
+        const xml = `
+        <w:p w14:paraId="0D9716AF" w14:textId="3F66E9E7" w:rsidR="002C6004" w:rsidRDefault="00477B28" w:rsidP="0011353B">
+            <w:pPr>
+                <w:pStyle w:val="MaDate"/>
+            </w:pPr>
+            <w:r>
+                <w:t>21 janvier</w:t>
+            </w:r>
+        </w:p>`
+
+        const obj = parse(xml).root
+        const result = dispatch(obj, 2017)
+        assert.deepStrictEqual(result.date, {
+            day: 21,
+            month: 0,
+            year: 2017
+        })
     })
     
     it("date: should ignore non-numeric contents except months (non case-sensitive)", function() {
@@ -68,13 +161,17 @@ describe("#dispatch()", function() {
                 <w:pStyle w:val="MaDate"/>
             </w:pPr>
             <w:r>
-                <w:t>Février</w:t>
+                <w:t>Mardi 2 Février</w:t>
             </w:r>
         </w:p>`
 
         const obj = parse(xml).root
-        const result = dispatch(obj)
-        assert.equal(result.date.month, 1)
+        const result = dispatch(obj, 2017)
+        assert.deepStrictEqual(result.date, {
+            day: 2,
+            month: 1,
+            year: 2017
+        })
     })
     
     it("date: should set year according to argument", function() {
@@ -85,13 +182,17 @@ describe("#dispatch()", function() {
                 <w:pStyle w:val="MaDate"/>
             </w:pPr>
             <w:r>
-                <w:t>1</w:t>
+                <w:t>1 mars</w:t>
             </w:r>
         </w:p>`
 
         const obj = parse(xml).root
         const result = dispatch(obj, 2016)
-        assert.equal(result.date.year, 2016)
+        assert.deepStrictEqual(result.date, {
+            day: 1,
+            month: 2,
+            year: 2016
+        })
     })
     
     it("date: should set year according to default value if no argument is provided", function() {
@@ -102,13 +203,17 @@ describe("#dispatch()", function() {
                 <w:pStyle w:val="MaDate"/>
             </w:pPr>
             <w:r>
-                <w:t>1</w:t>
+                <w:t>1 mars</w:t>
             </w:r>
         </w:p>`
 
         const obj = parse(xml).root
         const result = dispatch(obj)
-        assert.equal(result.date.year, (new Date()).getFullYear())
+        assert.deepStrictEqual(result.date, {
+            day: 1,
+            month: 2,
+            year: (new Date()).getFullYear()
+        })
     })
     
     it("date: should set day, month, year, hours and minutes", function() {
@@ -233,6 +338,23 @@ describe("#dispatch()", function() {
         const obj = parse(xml).root
         const result = dispatch(obj)
         assert.equal(result.title, "Mon titre")
+    })
+    
+    it("body: should ignore empty paragraphs", function() {
+
+        const xml = `
+        <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
+            <w:pPr>
+                <w:pStyle w:val="MonTweet"/>
+            </w:pPr>
+            <w:r w:rsidRPr="00EE4EF5">
+                <w:t xml:space="preserve"></w:t>
+            </w:r>
+        </w:p>`
+
+        const obj = parse(xml).root
+        const result = dispatch(obj)
+        assert.equal(result, null)
     })
     
     it("body: should ignore 'w:t' tags with no child tag", function() {
