@@ -52,5 +52,17 @@ export const importFromJSONFile = function(path) {
     path.splice(path.length - 1, 1)
     path = path.join(".")
 
-    return importFromJSON(JSON.parse(fs.readFileSync(path + ".json", "utf8")))
+    return new Promise((resolve, reject) => {
+        fs.readFile(
+            path + ".json",
+            "utf8",
+            (err, data) => {
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve(JSON.parse(data))
+                }
+            }
+        )
+    }).then(entries => importFromJSON(entries))
 }

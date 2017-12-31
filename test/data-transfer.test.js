@@ -88,13 +88,15 @@ describe("#transferData()", function(done) {
         assert.throws(() => transferData(options), Error, WRONG_IMPORT_EXTENSION_ERROR)
     })
 
-    it("should export data from file", function() {
+    it("should export data from file", function(done) {
         const options = {
             export: true,
             path: "test/Journal\ 2017.xml",
             year: 2017
         }
-        assert.equal(transferData(options), "5 entries have been found and saved in test/Journal\ 2017.json")
+        transferData(options)
+            .then(result => assert.equal(result, "5 entries have been found and saved in test/Journal\ 2017.json"))
+            .then(() => done())
     })
 
     it("should import data from file", function(done) {

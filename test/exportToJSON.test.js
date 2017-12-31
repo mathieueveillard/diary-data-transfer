@@ -1,7 +1,7 @@
 import {exportToJSON, FILE_PATH_ERROR} from "../src/exportToJSON"
 import assert from "assert"
 
-describe("#exportToJSON()", function() {
+describe("#exportToJSON()", function(done) {
 
     this.timeout(60000)
 
@@ -17,8 +17,9 @@ describe("#exportToJSON()", function() {
         assert.throws(() => exportToJSON("file", 2017), Error, FILE_PATH_ERROR)
     })
 
-    it("should find 5 entries", function() {
-        const result = exportToJSON("test/Journal\ 2017.xml", 2017)
-        assert.equal(result.length, 5)
+    it("should find 5 entries", function(done) {
+        exportToJSON("test/Journal\ 2017.xml", 2017)
+            .then(result => assert.equal(result.length, 5))
+            .then(() => done())
     })
 })

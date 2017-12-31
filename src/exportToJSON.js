@@ -37,7 +37,18 @@ export const exportToJSON = function(path, year) {
 
     paragraphs = assemble(paragraphs)
 
-    fs.writeFileSync(path + ".json", JSON.stringify(paragraphs).replace(/\\n/g, "\\\\n"))
-    
-    return paragraphs
+    return new Promise((resolve, reject) => {
+        fs.writeFile(
+            path + ".json",
+            JSON.stringify(paragraphs).replace(/\\n/g, "\\\\n"),
+            "utf8",
+            (err) => {
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve(paragraphs)
+                }
+            }
+        )
+    })
 }
