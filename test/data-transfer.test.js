@@ -95,7 +95,7 @@ describe("#transferData()", function(done) {
             year: 2017
         }
         transferData(options)
-            .then(result => assert.equal(result, "5 entries have been found and saved in test/Journal\ 2017.json"))
+            .then(result => assert.equal(result, "6 entries have been found and saved in test/Journal\ 2017.json"))
             .then(() => done())
     })
 
@@ -106,7 +106,7 @@ describe("#transferData()", function(done) {
             year: 2017
         }
         transferData(options)
-            .then(result => assert.equal(result, "5 entries have been found and inserted"))
+            .then(result => assert.equal(result, "6 entries have been found and inserted"))
             .then(() => done())
     })
 })

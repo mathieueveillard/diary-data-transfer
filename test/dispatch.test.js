@@ -276,11 +276,13 @@ describe("#dispatch()", function() {
 
         const obj = parse(xml).root
         const result = dispatch(obj, 2016)
-        assert.equal(result.date.day, 1)
-        assert.equal(result.date.month, 1)
-        assert.equal(result.date.year, 2016)
-        assert.equal(result.date.hours, 23)
-        assert.equal(result.date.minutes, 54)
+        assert.deepStrictEqual(result.date, {
+            day: 1,
+            month: 1,
+            year: 2016,
+            hours: 23,
+            minutes: 54
+        })
     })
     
     it("title: should ignore tags other than 'w:r'", function() {
@@ -713,6 +715,30 @@ describe("#dispatch()", function() {
         assert.deepStrictEqual(result, {
             style: "MaCitation",
             body: "> Voici"
+        })
+    })
+
+    it("body: should handle MonParagraphe style with (numbered) items", function() {
+
+        const xml = `
+        <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
+            <w:pPr>
+                <w:pStyle w:val="MonParagraphe"/>
+                <w:numPr>
+                    <w:ilvl w:val="0"/>
+                    <w:numId w:val="31"/>
+                </w:numPr>
+            </w:pPr>
+            <w:r>
+                <w:t xml:space="preserve">Voici </w:t>
+            </w:r>
+        </w:p>`
+
+        const obj = parse(xml).root
+        const result = dispatch(obj)
+        assert.deepStrictEqual(result, {
+            style: "MonParagraphe",
+            body: "- Voici"
         })
     })
     

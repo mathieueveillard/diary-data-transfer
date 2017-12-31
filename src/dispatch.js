@@ -61,7 +61,7 @@ const handleDateParagraph = function(obj, year) {
      * Find day, hours and minutes
      */
     const numbers = (grandChildren.map(child => child.content)
-        .join(" ")
+        .join("")
         .match(/\d*/g) || [])
         .filter(s => s !== "")
         .map(s => parseInt(s))
@@ -172,16 +172,28 @@ const handleTitleParagraph = function(obj) {
  */
 const handleTextParagraph = function(obj) {
 
+    let body = ""
+
+    const style = obj.children[0].children[0].attributes["w:val"]
+
     /**
      * Handles `MaCitation` paragraph's style
      */
-    let body = ""
-    const style = obj.children[0].children[0].attributes["w:val"]
     if (style === "MaCitation") {
         body += "> "
     }
 
-    let children = obj.children.filter(node => node.name === "w:r")
+    /**
+     * Handles `MonParagraphe` style with (numbered) items
+     */
+    if (style === "MonParagraphe"
+        && obj.children[0].children.length > 1
+        && obj.children[0].children[1].name === "w:numPr") {
+        
+        body += "- "
+    }
+
+     let children = obj.children.filter(node => node.name === "w:r")
 
     /**
      * Detects superscript and subscript (will be managed later)
