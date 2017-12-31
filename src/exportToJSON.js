@@ -37,7 +37,7 @@ export const exportToJSON = function(path, year) {
 
     paragraphs = assemble(paragraphs)
 
-    fs.writeFileSync(path + ".json", JSON.stringify(paragraphs))
+    fs.writeFileSync(path + ".json", JSON.stringify(paragraphs).replace(/\\n/g, "\\\\n"))
     
     return paragraphs
 }

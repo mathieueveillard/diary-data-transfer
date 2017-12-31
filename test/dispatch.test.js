@@ -636,6 +636,26 @@ describe("#dispatch()", function() {
         assert.equal(result.body, "La fin.")
     })
     
+    it("body: should return paragraph style", function() {
+
+        const xml = `
+        <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
+            <w:pPr>
+                <w:pStyle w:val="MonTweet"/>
+            </w:pPr>
+            <w:r>
+                <w:t xml:space="preserve">Voici </w:t>
+            </w:r>
+        </w:p>`
+
+        const obj = parse(xml).root
+        const result = dispatch(obj)
+        assert.deepStrictEqual(result, {
+            style: "MonTweet",
+            body: "Voici"
+        })
+    })
+    
     it("body: should handle MonParagraphe style", function() {
 
         const xml = `
@@ -650,7 +670,10 @@ describe("#dispatch()", function() {
 
         const obj = parse(xml).root
         const result = dispatch(obj)
-        assert.equal(result.body, "Voici")
+        assert.deepStrictEqual(result, {
+            style: "MonParagraphe",
+            body: "Voici"
+        })
     })
     
     it("body: should handle MaCitation style", function() {
@@ -667,10 +690,13 @@ describe("#dispatch()", function() {
 
         const obj = parse(xml).root
         const result = dispatch(obj)
-        assert.equal(result.body, "> Voici")
+        assert.deepStrictEqual(result, {
+            style: "MaCitation",
+            body: "> Voici"
+        })
     })
     
-    it("body: should transform inline styles described as xml to markdown", function() {
+    it("body: should handle text paragraphs", function() {
 
         const xml = `
         <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">

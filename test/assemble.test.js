@@ -24,6 +24,50 @@ describe("#assemble()", function() {
         })
     })
 
+    it("should group paragraphs when style is MonParagraphe", function() {
+        const parsed = [
+            {date: 1514050100},
+            {title: "Mon titre"},
+            {
+                style: "MonParagraphe",
+                body: "Lorem ipsum dolor sit amet"
+            },
+            {
+                style: "MonParagraphe",
+                body: "consectetur adipiscing elit"
+            }
+        ]
+        assert.deepStrictEqual(assemble(parsed)[0], {
+            date: 1514050100,
+            title: "Mon titre",
+            body: `Lorem ipsum dolor sit amet
+
+            consectetur adipiscing elit`
+        })
+    })
+
+    it("should group paragraphs when style is MaCitation", function() {
+        const parsed = [
+            {date: 1514050100},
+            {title: "Mon titre"},
+            {
+                style: "MaCitation",
+                body: "> Lorem ipsum dolor sit amet"
+            },
+            {
+                style: "MaCitation",
+                body: "> consectetur adipiscing elit"
+            }
+        ]
+        assert.deepStrictEqual(assemble(parsed)[0], {
+            date: 1514050100,
+            title: "Mon titre",
+            body: `> Lorem ipsum dolor sit amet
+
+            > consectetur adipiscing elit`
+        })
+    })
+
     it("should re-assemble objects by date", function() {
         const parsed = [
             {date: 1514050100},
@@ -59,6 +103,26 @@ describe("#assemble()", function() {
         })
     })
 
+    it("should not group paragraphs when style is not the same", function() {
+        const parsed = [
+            {date: 1514050100},
+            {title: "Mon titre"},
+            {
+                style: "MonTweet",
+                body: "Lorem ipsum dolor sit amet"
+            },
+            {
+                style: "MonParagraphe",
+                body: "consectetur adipiscing elit"
+            }
+        ]
+        assert.deepStrictEqual(assemble(parsed)[1], {
+            date: 1514050100,
+            title: "Mon titre",
+            body: "consectetur adipiscing elit"
+        })
+    })
+
     it("should set a default title if none is provided", function() {
         const parsed = [
             {date: 1514050100},
@@ -82,16 +146,29 @@ describe("#assemble()", function() {
                     minutes: 30
                 }
             },
-            {body: "Lorem ipsum dolor sit amet"},
-            {body: "consectetur adipiscing elit"},
+            {
+                style: "MonParagraphe",
+                body: "Lorem ipsum dolor sit amet"
+            },
+            {
+                style: "MonParagraphe",
+                body: "consectetur adipiscing elit"
+            },
+            {
+                style: "MonTweet",
+                body: "Sed ut perspiciatis unde omnis iste natus"
+            },
             {date: 1514050300},
             {title: "Mon titre3"},
-            {body: "Sed ut perspiciatis unde omnis iste natus"},
+            {
+                style: "",
+                body: "Donec sit amet eros quis sem suscipit sollicitudin id at sem."
+            },
         ]
         assert.deepStrictEqual(assemble(parsed)[1], {
             date: 1514053800,
             title: "",
-            body: "consectetur adipiscing elit"
+            body: "Sed ut perspiciatis unde omnis iste natus"
         })
     })
 })

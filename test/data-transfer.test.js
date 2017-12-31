@@ -94,7 +94,7 @@ describe("#transferData()", function(done) {
             path: "test/Journal\ 2017.xml",
             year: 2017
         }
-        assert.equal(transferData(options), "7 entries have been found and saved in test/Journal\ 2017.json")
+        assert.equal(transferData(options), "5 entries have been found and saved in test/Journal\ 2017.json")
     })
 
     it("should import data from file", function(done) {
@@ -104,7 +104,7 @@ describe("#transferData()", function(done) {
             year: 2017
         }
         transferData(options)
-            .then(result => assert.equal(result, "7 entries have been found and inserted"))
+            .then(result => assert.equal(result, "5 entries have been found and inserted"))
             .then(() => done())
     })
 })

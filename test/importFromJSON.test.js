@@ -61,7 +61,7 @@ describe("#importFromJSON()", function(done) {
 
     it("should import an array of entries from a file", function(done) {
         importFromJSONFile("test/Journal\ 2017.json")
-        .then(result => assert.equal(result.length, 7))
+        .then(result => assert.equal(result.length, 5))
         .then(() => done())
     })
 })

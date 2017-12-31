@@ -176,7 +176,8 @@ const handleTextParagraph = function(obj) {
      * Handles `MaCitation` paragraph's style
      */
     let body = ""
-    if (obj.children[0].children[0].attributes["w:val"] === "MaCitation") {
+    const style = obj.children[0].children[0].attributes["w:val"]
+    if (style === "MaCitation") {
         body += "> "
     }
 
@@ -274,6 +275,9 @@ const handleTextParagraph = function(obj) {
     if (body === "") {
         return null
     } else {
-        return {body}
+        return {
+            style,
+            body
+        }
     }
 }

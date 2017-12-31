@@ -17,8 +17,8 @@ describe("#exportToJSON()", function() {
         assert.throws(() => exportToJSON("file", 2017), Error, FILE_PATH_ERROR)
     })
 
-    it("should find 7 entries", function() {
+    it("should find 5 entries", function() {
         const result = exportToJSON("test/Journal\ 2017.xml", 2017)
-        assert.equal(result.length, 7)
+        assert.equal(result.length, 5)
     })
 })
