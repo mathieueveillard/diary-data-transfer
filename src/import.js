@@ -1,10 +1,28 @@
 import request from "request"
 import fs from "fs"
+import { resolveObject } from "url";
+import { resolve } from "url";
 
 const URL_ROOT = "http://localhost:4000/graphql"
 export const FILE_PATH_ERROR = "File extension must be .json"
+export const DATE_MISSING_ERROR = "Entry's date is missing"
+export const BODY_MISSING_ERROR = "Entry's body is missing"
 
 const importSingleEntryFromJSON = function(entry) {
+
+    if (!entry.date) {
+        return Promise.reject({
+            error: DATE_MISSING_ERROR,
+            entry
+        })
+    }
+
+    if (!entry.body) {
+        return Promise.reject({
+            error: BODY_MISSING_ERROR,
+            entry
+        })
+    }
 
     const options = {
         method: "POST",
@@ -20,6 +38,8 @@ const importSingleEntryFromJSON = function(entry) {
                     }) {
                         _id
                         date
+                        title
+                        body
                     }
                 }`
         }
@@ -28,18 +48,45 @@ const importSingleEntryFromJSON = function(entry) {
     return new Promise((resolve, reject) => {
         request(options, (error, response, body) => {
             if (error) {
-                reject(error)
+                reject({
+                    error,
+                    entry
+                })
             } else {
-                resolve(body.data.createEntryForDataRecovery)
+                if (body.errors) {
+                    reject({
+                        error: body.errors,
+                        entry
+                    })
+                } else {
+                    resolve(body.data.createEntryForDataRecovery)
+                }
             }
         })
     })
-
-    return true
 }
 
 export const importFromJSON = function(entries) {
-    return Promise.all(entries.map(entry => importSingleEntryFromJSON(entry)))
+    const SUCCESS = "Success"
+    const ERROR = "Error"
+    return Promise.all(entries.map(entry => importSingleEntryFromJSON(entry)
+        .then(entry => ({
+            status: SUCCESS,
+            entry
+        }))
+        .catch(error => ({
+            status: ERROR,
+            error
+        }))
+    ))
+    .then(results => ({
+        success: results
+            .filter(result => result.status === SUCCESS)
+            .map(result => result.entry),
+        errors: results
+            .filter(result => result.status === ERROR)
+            .map(result => result.error)
+    }))
 }
 
 export const importEntries = function(path) {
@@ -57,13 +104,30 @@ export const importEntries = function(path) {
         fs.readFile(
             path + ".json",
             "utf8",
-            (err, data) => {
-                if (err) {
-                    reject(err)
+            (error, data) => {
+                if (error) {
+                    reject(error)
                 } else {
                     resolve(JSON.parse(data))
                 }
             }
         )
-    }).then(entries => importFromJSON(entries))
+    })
+    .then(entries => importFromJSON(entries))
+    .then(result => {
+        return new Promise((resolve, reject) => {
+            fs.writeFile(
+                path + "-rejects.json",
+                JSON.stringify(result.errors),
+                "utf8",
+                error => {
+                    if (error) {
+                        reject(error)
+                    } else {
+                        resolve(result)
+                    }
+                }
+            )
+        })
+    })
 }

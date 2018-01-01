@@ -95,7 +95,7 @@ describe("#data-transfer", function(done) {
             year: 2017
         }
         transferData(options)
-            .then(result => assert.equal(result, "6 entries have been found and saved in test/Journal\ 2017.json"))
+            .then(confirmation => assert.equal(confirmation, "6 entries have been found and saved in test/Journal 2017.json"))
             .then(() => done())
     })
 
@@ -106,7 +106,8 @@ describe("#data-transfer", function(done) {
             year: 2017
         }
         transferData(options)
-            .then(result => assert.equal(result, "6 entries have been found and inserted"))
+            .then(confirmation => assert.equal(confirmation, `6 entries have been found and imported.
+0 entries could not be imported, see test/Journal 2017-rejects.json for more information.`))
             .then(() => done())
     })
 })

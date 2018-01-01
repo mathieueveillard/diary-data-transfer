@@ -793,7 +793,7 @@ describe("#handle", function() {
         assert.deepStrictEqual(result.body, "Voici un [lien hypertexte](http://www.mathieueveillard.com) qu’il est beau.")
     })
     
-    it("body: should ignore inline superscripts in hyperlinks", function() {
+    it("body: should ignore inline styles and superscripts in hyperlinks", function() {
 
         const meta = `
         <Relationships>

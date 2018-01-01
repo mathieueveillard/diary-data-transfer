@@ -122,7 +122,8 @@ export const transferData = function(options) {
     if (options.import) {
         return importEntries(path + ".json")
             .then(result => {
-                const confirmation = `${result.length} entries have been found and inserted`
+                const confirmation = `${result.success.length} entries have been found and imported.
+${result.errors.length} entries could not be imported, see ${path}-rejects.json for more information.`
                 console.log(confirmation)
                 return confirmation        
             })

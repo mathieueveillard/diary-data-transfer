@@ -318,8 +318,8 @@ const handleTextParagraph = function(obj, relations) {
     body += children.map(node => node.trim())
         .filter(node => node !== "")
         .join(" ")
-        .replace(/ \./g, ".")//In case a child would start with "."
-        .replace(/ ,/g, ",")//In case a child would start with ","
+        .replace(/ \./g, ".")//In case a node would start with "."
+        .replace(/ ,/g, ",")//In case a node would start with ","
 
     if (body === "") {
         return null
