@@ -4,9 +4,9 @@ import { resolveObject } from "url";
 import { resolve } from "url";
 
 const URL_ROOT = "http://localhost:4000/graphql"
-export const FILE_PATH_ERROR = "File extension must be .json"
-export const DATE_MISSING_ERROR = "Entry's date is missing"
-export const BODY_MISSING_ERROR = "Entry's body is missing"
+export const FILE_PATH_ERROR = "FILE_PATH_ERROR: File extension must be .json"
+export const DATE_MISSING_ERROR = "DATE_MISSING_ERROR: Entry's date is missing"
+export const BODY_MISSING_ERROR = "BODY_MISSING_ERROR: Entry's body is missing"
 
 const importSingleEntryFromJSON = function(entry) {
 
@@ -117,7 +117,7 @@ export const importEntries = function(path) {
     .then(result => {
         return new Promise((resolve, reject) => {
             fs.writeFile(
-                path + "-rejects.json",
+                path + "-import-rejects.json",
                 JSON.stringify(result.errors),
                 "utf8",
                 error => {

@@ -1,5 +1,12 @@
 import parse from "xml-parser"
-import {handle, NON_VALID_DATE_ERROR} from "../src/handle"
+import {
+    handle,
+    NOT_A_PARAGRAPH_ERROR,
+    PARAGRAPH_WITH_NO_STYLE_ERROR,
+    UNKNOWN_STYLE_PARAGRAPH_ERROR,
+    NON_VALID_DATE_ERROR,
+    HYPERLINK_URL_NOT_FOUND_ERROR
+} from "../src/handle"
 import assert from "assert"
 
 describe("#handle", function() {
@@ -7,11 +14,10 @@ describe("#handle", function() {
     it("should ignore non-paragraphs", function() {
         const xml = `<nothing/>`
         const obj = parse(xml).root
-        const result = handle(obj)
-        assert.equal(result, null)
+        assert.throws(() => handle(obj), new RegExp(NOT_A_PARAGRAPH_ERROR))
     })
     
-    it("should ignore empty paragraphs", function() {
+    it("should ignore CRLF", function() {
 
         const xml = `
         <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
@@ -23,6 +29,45 @@ describe("#handle", function() {
         const obj = parse(xml).root
         const result = handle(obj)
         assert.equal(result, null)
+    })
+    
+    it("should throw error on paragraphs with unknown style", function() {
+        const xml = `
+        <w:p w14:paraId="0D9716AF" w14:textId="3F66E9E7" w:rsidR="002C6004" w:rsidRDefault="00477B28" w:rsidP="0011353B">
+            <w:pPr>
+                <w:pStyle w:val="UnknownStyle"/>
+            </w:pPr>
+            <w:r>
+                <w:t>Content</w:t>
+            </w:r>
+        </w:p>`
+        const obj = parse(xml).root
+        assert.throws(() => handle(obj), new RegExp(UNKNOWN_STYLE_PARAGRAPH_ERROR))
+    })
+    
+    it("should throw error on paragraphs with no style", function() {
+        const xml = `
+        <w:p w14:paraId="0D9716AF" w14:textId="3F66E9E7" w:rsidR="002C6004" w:rsidRDefault="00477B28" w:rsidP="0011353B">
+            <pPr>
+                <w:pStyle/>
+            </w:pPr>
+            <w:r>
+                <w:t>Content</w:t>
+            </w:r>
+        </w:p>`
+        const obj = parse(xml).root
+        assert.throws(() => handle(obj), new RegExp(PARAGRAPH_WITH_NO_STYLE_ERROR))
+    })
+    
+    it("should throw error (warning) on paragraphs with no style (2)", function() {
+        const xml = `
+        <w:p w14:paraId="0D9716AF" w14:textId="3F66E9E7" w:rsidR="002C6004" w:rsidRDefault="00477B28" w:rsidP="0011353B">
+            <r>
+                <w:t>Content</w:t>
+            </w:r>
+        </w:p>`
+        const obj = parse(xml).root
+        assert.throws(() => handle(obj), new RegExp(PARAGRAPH_WITH_NO_STYLE_ERROR))
     })
     
     it("date: should ignore tags other than 'w:r' and 'w:t'", function() {
@@ -81,7 +126,7 @@ describe("#handle", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        assert.throws(() => handle(obj), Error, NON_VALID_DATE_ERROR)
+        assert.throws(() => handle(obj), new RegExp(NON_VALID_DATE_ERROR))
     })
     
     it("date: should throw error when day is missing", function() {
@@ -97,7 +142,7 @@ describe("#handle", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        assert.throws(() => handle(obj), Error, NON_VALID_DATE_ERROR)
+        assert.throws(() => handle(obj), new RegExp(NON_VALID_DATE_ERROR))
     })
     
     it("date: should throw error when month is missing", function() {
@@ -113,7 +158,7 @@ describe("#handle", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        assert.throws(() => handle(obj), Error, NON_VALID_DATE_ERROR)
+        assert.throws(() => handle(obj), new RegExp(NON_VALID_DATE_ERROR))
     })
     
     it("date: should throw error when too many numbers are provided", function() {
@@ -129,7 +174,7 @@ describe("#handle", function() {
         </w:p>`
 
         const obj = parse(xml).root
-        assert.throws(() => handle(obj), Error, NON_VALID_DATE_ERROR)
+        assert.throws(() => handle(obj), new RegExp(NON_VALID_DATE_ERROR))
     })
     
     it("date: should handle incomplete dates (hours or minutes)", function() {
@@ -873,7 +918,54 @@ describe("#handle", function() {
         assert.deepStrictEqual(result.body, "[Voici un 1 er gras lien hypertexte](http://www.mathieueveillard.com)")
     })
     
-   it("body: should handle text paragraphs", function() {
+    it("should throw error on hyperlinks if URL cannot be found", function() {
+
+        const meta = `
+        <Relationships>
+        </Relationships>`
+
+        const xml = `
+        <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
+            <w:pPr>
+                <w:pStyle w:val="MonTweet"/>
+            </w:pPr>
+            <w:hyperlink r:id="rId5" w:history="1">
+                <w:r w:rsidRPr="00A2689A">
+                    <w:rPr>
+                        <w:rStyle w:val="Lienhypertexte"/>
+                    </w:rPr>
+                    <w:t>Lien hypertexte</w:t>
+                </w:r>
+            </w:hyperlink>
+        </w:p>`
+
+        const obj = parse(xml).root
+        const relations = parse(meta).root
+        assert.throws(() => handle(obj, 2017, relations), new RegExp(HYPERLINK_URL_NOT_FOUND_ERROR))
+    })
+    
+    it("should throw error on hyperlinks if URL cannot be found (2)", function() {
+
+        const xml = `
+        <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">
+            <w:pPr>
+                <w:pStyle w:val="MonTweet"/>
+            </w:pPr>
+            <w:hyperlink r:id="rId5" w:history="1">
+                <w:r w:rsidRPr="00A2689A">
+                    <w:rPr>
+                        <w:rStyle w:val="Lienhypertexte"/>
+                    </w:rPr>
+                    <w:t>Lien hypertexte</w:t>
+                </w:r>
+            </w:hyperlink>
+        </w:p>`
+
+        const obj = parse(xml).root
+        assert.throws(() => handle(obj), new RegExp(HYPERLINK_URL_NOT_FOUND_ERROR))
+    })
+    
+    it("body: should handle text paragraphs", function() {
 
         const xml = `
         <w:p w14:paraId="7E9C6B89" w14:textId="4AD3317F" w:rsidR="0047424E" w:rsidRDefault="0047424E" w:rsidP="003A75D3">

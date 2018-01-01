@@ -9,11 +9,11 @@ import {importEntries} from "./import"
  * node lib/data-transfer -p test.xml -e
  * node lib/data-transfer -p test.json -i
  */
-export const EXTRACT_OR_IMPORT_ERROR = "One must choose either to extract (-e: .xml -> .json) or import (-i: .json -> diary's API) data"
-export const NO_EXTRACT_PATH_PROVIDED_ERROR = "A file path must be provided (*.xml) in order to extract data"
-export const WRONG_EXTRACT_EXTENSION_ERROR = "When extracting data, the extension of the file must be .xml"
-export const NO_IMPORT_PATH_PROVIDED_ERROR = "A file path must be provided (*.json) in order to import data"
-export const WRONG_IMPORT_EXTENSION_ERROR = "When importing data, the extension of the file must be .json"
+export const EXTRACT_OR_IMPORT_ERROR = "EXTRACT_OR_IMPORT_ERROR: One must choose either to extract (-e: .xml -> .json) or import (-i: .json -> diary's API) data"
+export const NO_EXTRACT_PATH_PROVIDED_ERROR = "NO_EXTRACT_PATH_PROVIDED_ERROR: A file path must be provided (*.xml) in order to extract data"
+export const WRONG_EXTRACT_EXTENSION_ERROR = "WRONG_EXTRACT_EXTENSION_ERROR: When extracting data, the extension of the file must be .xml"
+export const NO_IMPORT_PATH_PROVIDED_ERROR = "NO_IMPORT_PATH_PROVIDED_ERROR: A file path must be provided (*.json) in order to import data"
+export const WRONG_IMPORT_EXTENSION_ERROR = "WRONG_IMPORT_EXTENSION_ERROR: When importing data, the extension of the file must be .json"
 
 const optionDefinitions = [
     {
@@ -113,13 +113,17 @@ export const transferData = function(options) {
 
     if (options.extract) {
         return extractEntries(path + ".xml", options.year)
-            .then(paragraphs => {
+            .then(result => {
 
-                const success = `${paragraphs.length} entries have been found and saved in ${path}.json`
+                const success = `${result.success.length} entries have been found and saved in ${path}.json.`
                 console.log(chalk.green(success))
 
-                console.log(success)
-                return success
+                const errors = `${result.errors.length} paragraphs could not be handled, see ${path}-extract-rejects.json for more information.`
+                if (result.errors.length > 0) {
+                    console.log(chalk.red(errors))
+                }
+
+                return success + '\n' + errors
             })
     }
 
@@ -130,7 +134,7 @@ export const transferData = function(options) {
                 const success = `${result.success.length} entries have been found and imported.`
                 console.log(chalk.green(success))
                 
-                const errors = `${result.errors.length} entries could not be imported, see ${path}-rejects.json for more information.`
+                const errors = `${result.errors.length} entries could not be imported, see ${path}-import-rejects.json for more information.`
                 if (result.errors.length > 0) {
                     console.log(chalk.red(errors))
                 }

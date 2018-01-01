@@ -1,4 +1,8 @@
-export const NON_VALID_DATE_ERROR = "This is not a valid date format"
+export const NOT_A_PARAGRAPH_ERROR = "NOT_A_PARAGRAPH_ERROR: This is not a paragraph"
+export const PARAGRAPH_WITH_NO_STYLE_ERROR = "PARAGRAPH_WITH_NO_STYLE_ERROR: This paragraph has no style"
+export const UNKNOWN_STYLE_PARAGRAPH_ERROR = "UNKNOWN_STYLE_PARAGRAPH_ERROR: Paragraph's style is unknown"
+export const NON_VALID_DATE_ERROR = "NON_VALID_DATE_ERROR: This is not a valid date format"
+export const HYPERLINK_URL_NOT_FOUND_ERROR = "HYPERLINK_URL_NOT_FOUND_ERROR: Hyperlink's URL cannot be found"
 
 /**
  * A main function that parses xml and dispatches to the appropriate handling function.
@@ -9,9 +13,19 @@ export const NON_VALID_DATE_ERROR = "This is not a valid date format"
  */
 export const handle = function(obj, year, relations) {
     
-    /**
-     * Returns null for non-paragraphs or empty paragraphs
-     */
+    //Not a paragraph
+    if (obj.name !== "w:p") {
+        throw Error(NOT_A_PARAGRAPH_ERROR)
+    }
+
+    //Paragraph with no style
+    if (obj.children.length > 0
+        && obj.children[0].name !== "w:pPr") {
+
+        throw Error(PARAGRAPH_WITH_NO_STYLE_ERROR)
+    }
+
+    //CRLF
     if (obj.name !== "w:p" || obj.children.length > 0
         && obj.children[0].name === "w:pPr"
         && obj.children[0].children.length > 0
@@ -19,7 +33,8 @@ export const handle = function(obj, year, relations) {
 
         return null
     }
-    else if (obj.children.length > 0
+
+    if (obj.children.length > 0
         && obj.children[0].name === "w:pPr"
         && obj.children[0].children.length > 0
         && obj.children[0].children[0].name === "w:pStyle") {
@@ -40,10 +55,11 @@ export const handle = function(obj, year, relations) {
                 break
             
             default:
-                return null
-                break
+                throw Error(UNKNOWN_STYLE_PARAGRAPH_ERROR)
         }
     }
+
+
 }
 
 
@@ -194,7 +210,7 @@ const handleTextParagraph = function(obj, relations) {
                 return node
             }
             else if (node.name === "w:hyperlink") {
-
+                
                 /*
                     <w:hyperlink r:id="rId5" w:history="1">
                         <w:r w:rsidRPr="006D35AA">
@@ -214,9 +230,14 @@ const handleTextParagraph = function(obj, relations) {
 
                 //Get URL
                 const id = node.attributes["r:id"]
-                const url = relations.children
-                    .find(node => node.name === "Relationship" && node.attributes["Id"] === id)
-                    .attributes["Target"]
+                let url
+                try {
+                    url = relations.children
+                        .find(node => node.name === "Relationship" && node.attributes["Id"] === id)
+                        .attributes["Target"]                    
+                } catch (error) {
+                    throw Error(HYPERLINK_URL_NOT_FOUND_ERROR)
+                }
 
                 //Get displayed text
                 const text = node.children

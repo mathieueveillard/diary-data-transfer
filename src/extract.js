@@ -57,28 +57,81 @@ export const extractEntries = function(path, year) {
                         .children[0] //pkg:xmlData
                         .children[0] //Relationships
 
-                    let paragraphs = body.children.map(paragraph => handle(paragraph, year, relations))
-                        .filter(obj => obj)
+                    const SUCCESS = "Success"
+                    const ERROR = "Error"
 
-                    resolve(assemble(paragraphs))
+                    const results = body.children.map(paragraph => {
+                        try {
+                            return {
+                                status: SUCCESS,
+                                paragraph: handle(paragraph, year, relations)
+                            }
+                        } catch (error) {
+                            return {
+                                status: ERROR,
+                                error: {
+                                    error: error.toString(),
+                                    paragraph
+                                }
+                            }
+                        }
+                    })
+
+                    resolve({
+                        success: results
+                            .filter(result => result.status === SUCCESS && result.paragraph)
+                            .map(result => result.paragraph),
+                        errors: results
+                            .filter(result => result.status === ERROR)
+                            .map(result => result.error)
+                    })
                 }
             })
     })
 
-    .then(paragraphs => {
-        return new Promise((resolve, reject) => {
-            fs.writeFile(
-                path + ".json",
-                JSON.stringify(paragraphs).replace(/\\n/g, "\\\\n"),
-                "utf8",
-                (err) => {
-                    if (err) {
-                        reject(err)
-                    } else {
-                        resolve(paragraphs)
+    .then(result => ({
+        success: assemble(result.success),
+        errors: result.errors
+    }))
+
+    .then(result => {
+        return Promise.all([
+
+            //Success
+            new Promise((resolve, reject) => {
+                fs.writeFile(
+                    path + ".json",
+                    JSON.stringify(result.success).replace(/\\n/g, "\\\\n"),
+                    "utf8",
+                    error => {
+                        if (error) {
+                            reject(error)
+                        } else {
+                            resolve(result.success)
+                        }
                     }
-                }
-            )
-        })
+                )
+            }),
+
+            //Errors
+            new Promise((resolve, reject) => {
+                fs.writeFile(
+                    path + "-extract-rejects.json",
+                    JSON.stringify(result.errors),
+                    "utf8",
+                    error => {
+                        if (error) {
+                            reject(error)
+                        } else {
+                            resolve(result.errors)
+                        }
+                    }
+                )
+            })
+        ])
     })
+    .then(results => ({
+        success: results[0],
+        errors: results[1]
+    }))
 }

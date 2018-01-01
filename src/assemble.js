@@ -1,7 +1,7 @@
 /**
  * A function that accepts an array of objects and returns another array of objects, reassembled.
- * Groups paragraphs of same style (MonParagraphe, MaCitation)
- * Reassembles date, title and body paragraphs into entries
+ * Groups paragraphs of same style (MonParagraphe, MaCitation).
+ * Reassembles date, title and body paragraphs into entries.
  */
 export const assemble = function(parsed) {
 

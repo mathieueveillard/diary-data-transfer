@@ -13,15 +13,15 @@ describe("#import", function(done) {
     this.timeout(60000)
 
     it("should throw an error if provided with a wrong file path", function() {
-        assert.throws(() => importEntries(".json"), Error, FILE_PATH_ERROR)
+        assert.throws(() => importEntries(".json"), new RegExp(FILE_PATH_ERROR))
     })
 
     it("should throw an error if provided with a wrong file path (2)", function() {
-        assert.throws(() => importEntries("file.jso"), Error, FILE_PATH_ERROR)
+        assert.throws(() => importEntries("file.jso"), new RegExp(FILE_PATH_ERROR))
     })
 
     it("should throw an error if provided with a wrong file path (3)", function() {
-        assert.throws(() => importEntries("file"), Error, FILE_PATH_ERROR)
+        assert.throws(() => importEntries("file"), new RegExp(FILE_PATH_ERROR))
     })
 
     it("should fail if date is missing", function(done) {
@@ -152,7 +152,7 @@ describe("#import", function(done) {
         importEntries("test/test.json")
             .then(() => new Promise((resolve, reject) => {
                 fs.readFile(
-                    "test/test-rejects.json",
+                    "test/test-import-rejects.json",
                     "utf8",
                     (err, data) => {
                         if (err) {
