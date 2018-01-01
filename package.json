@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/mathieueveillard/diary#readme",
   "dependencies": {
+    "chalk": "^2.3.0",
     "command-line-args": "^4.0.7",
     "command-line-usage": "^4.0.2",
     "request": "^2.83.0",

@@ -1,5 +1,6 @@
 import commandLineArgs from "command-line-args"
 import getUsage from "command-line-usage"
+import chalk from "chalk"
 import {extractEntries} from "./extract"
 import {importEntries} from "./import"
 
@@ -113,19 +114,28 @@ export const transferData = function(options) {
     if (options.extract) {
         return extractEntries(path + ".xml", options.year)
             .then(paragraphs => {
-                const confirmation = `${paragraphs.length} entries have been found and saved in ${path}.json`
-                console.log(confirmation)
-                return confirmation
+
+                const success = `${paragraphs.length} entries have been found and saved in ${path}.json`
+                console.log(chalk.green(success))
+
+                console.log(success)
+                return success
             })
     }
 
     if (options.import) {
         return importEntries(path + ".json")
             .then(result => {
-                const confirmation = `${result.success.length} entries have been found and imported.
-${result.errors.length} entries could not be imported, see ${path}-rejects.json for more information.`
-                console.log(confirmation)
-                return confirmation        
+
+                const success = `${result.success.length} entries have been found and imported.`
+                console.log(chalk.green(success))
+                
+                const errors = `${result.errors.length} entries could not be imported, see ${path}-rejects.json for more information.`
+                if (result.errors.length > 0) {
+                    console.log(chalk.red(errors))
+                }
+
+                return success + '\n' + errors
             })
     }
 }

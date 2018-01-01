@@ -9,7 +9,7 @@ import {
 
 import assert from "assert"
 
-describe("#data-transfer", function(done) {
+describe.only("#data-transfer", function(done) {
 
     this.timeout(60000)
 
