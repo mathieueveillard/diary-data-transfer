@@ -101,7 +101,7 @@ export const extractEntries = function(path, year) {
             new Promise((resolve, reject) => {
                 fs.writeFile(
                     path + ".json",
-                    JSON.stringify(result.success).replace(/\\n/g, "\\\\n"),
+                    JSON.stringify(result.success),
                     "utf8",
                     error => {
                         if (error) {

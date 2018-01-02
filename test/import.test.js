@@ -55,14 +55,25 @@ describe("#import", function(done) {
             .then(() => done())
     })
 
-    it("should fail if body contains wrong chars", function(done) {
+    it("should escape special chars", function(done) {
         const entries = [{
             "date": 1514480400,
-            "title": "This should fail",
-            "body": "This should fail as well:\n "
+            "title": "This should succeed",
+            "body": "This should succeed as well.\nDid it?"
         }]
         importFromJSON(entries)
-            .then(result => assert.equal(result.errors[0].error.length, 1))
+            .then(result => assert.equal(result.errors.length, 0))
+            .then(() => done())
+    })
+
+    it("should escape special chars (2)", function(done) {
+        const entries = [{
+            "date": 1514480400,
+            "title": "This should succeed",
+            "body": "This should succeed as well: \"- Did it?\""
+        }]
+        importFromJSON(entries)
+            .then(result => assert.equal(result.errors.length, 0))
             .then(() => done())
     })
 
@@ -130,21 +141,26 @@ describe("#import", function(done) {
             },
             {
                 "date": 1514480400,
-                "title": "This should fail",
-                "body": "This should fail as well:\n "
+                "title": "This should succeed",
+                "body": "This should succeed:\n"
+            },
+            {
+                "date": 1514480400,
+                "title": "This should succeed",
+                "body": "This should succeed:\""
             }
         ]
         importFromJSON(entries)
             .then(result => {
-                assert.equal(result.success.length, 2)
-                assert.equal(result.errors.length, 4)
+                assert.equal(result.success.length, 4)
+                assert.equal(result.errors.length, 3)
             })
             .then(() => done())
     })
 
     it("should import an array of entries from a file", function(done) {
         importEntries("test/test.json")
-            .then(result => assert.equal(result.success.length, 2))
+            .then(result => assert.equal(result.success.length, 4))
             .then(() => done())
     })
 
@@ -163,7 +179,7 @@ describe("#import", function(done) {
                     }
                 )
             }))
-            .then(data => assert.equal(data.length, 4))
+            .then(data => assert.equal(data.length, 3))
             .then(() => done())
     })
 })
