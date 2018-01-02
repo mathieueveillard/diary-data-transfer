@@ -115,15 +115,17 @@ export const transferData = function(options) {
         return extractEntries(path + ".xml", options.year)
             .then(result => {
 
-                const success = `${result.success.length} entries have been found and saved in ${path}.json.`
+                const s = result.success.length
+                const success = `${s} ${s > 1 ? "entries have" : "entry has"} been found and saved in ${path}.json.`
                 console.log(chalk.green(success))
 
-                const errors = `${result.errors.length} paragraphs could not be handled, see ${path}-extract-rejects.json for more information.`
-                if (result.errors.length > 0) {
+                const e = result.errors.length
+                const errors = `${e} paragraph${e > 1 ? "s" : ""} could not be handled, see ${path}-extract-rejects.json for more information.`
+                if (e > 0) {
                     console.log(chalk.red(errors))
                 }
 
-                return success + '\n' + errors
+                return `${success}${e > 0 ? "\n" + errors : ""}`
             })
     }
 
@@ -131,15 +133,17 @@ export const transferData = function(options) {
         return importEntries(path + ".json")
             .then(result => {
 
-                const success = `${result.success.length} entries have been found and imported.`
+                const s = result.success.length
+                const success = `${s} ${s > 1 ? "entries have" : "entry has"} been found and imported.`
                 console.log(chalk.green(success))
                 
-                const errors = `${result.errors.length} entries could not be imported, see ${path}-import-rejects.json for more information.`
-                if (result.errors.length > 0) {
+                const e = result.errors.length
+                const errors = `${e} ${e > 1 ? "entries" : "entry"} could not be imported, see ${path}-import-rejects.json for more information.`
+                if (e > 0) {
                     console.log(chalk.red(errors))
                 }
 
-                return success + '\n' + errors
+                return `${success}${e > 0 ? "\n" + errors : ""}`
             })
     }
 }

@@ -107,8 +107,7 @@ describe("#data-transfer", function(done) {
             year: 2017
         }
         transferData(options)
-            .then(confirmation => assert.equal(confirmation, `6 entries have been found and imported.
-0 entries could not be imported, see test/Journal 2017-import-rejects.json for more information.`))
+            .then(confirmation => assert.equal(confirmation, `6 entries have been found and imported.`))
             .then(() => done())
     })
 })
