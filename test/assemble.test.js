@@ -24,6 +24,25 @@ describe("#assemble", function() {
         })
     })
 
+    it("should calculate timestamp based on date object", function() {
+        const parsed = [
+            {
+                date: {
+                    year: 2017,
+                    month: 11,
+                    day: 23
+                }
+            },
+            {title: "Mon titre"},
+            {body: "Lorem ipsum dolor sit amet"},
+        ]
+        assert.deepStrictEqual(assemble(parsed)[0], {
+            date: 1513983600,
+            title: "Mon titre",
+            body: "Lorem ipsum dolor sit amet"
+        })
+    })
+
     it("should group paragraphs when style is MonParagraphe", function() {
         const parsed = [
             {date: 1514050100},
@@ -131,6 +150,34 @@ describe("#assemble", function() {
         assert.deepStrictEqual(assemble(parsed)[0], {
             date: 1514050100,
             title: "",
+            body: "Lorem ipsum dolor sit amet"
+        })
+    })
+
+    it("should ignore empty paragraphs if provided with such", function() {
+        const parsed = [
+            {date: 1514050100},
+            {title: "Mon titre"},
+            {},
+            {body: "Lorem ipsum dolor sit amet"},
+        ]
+        assert.deepStrictEqual(assemble(parsed)[0], {
+            date: 1514050100,
+            title: "Mon titre",
+            body: "Lorem ipsum dolor sit amet"
+        })
+    })
+
+    it("should ignore empty paragraphs if provided with such (2)", function() {
+        const parsed = [
+            {date: 1514050100},
+            {title: "Mon titre"},
+            {body: ""},
+            {body: "Lorem ipsum dolor sit amet"},
+        ]
+        assert.deepStrictEqual(assemble(parsed)[0], {
+            date: 1514050100,
+            title: "Mon titre",
             body: "Lorem ipsum dolor sit amet"
         })
     })
