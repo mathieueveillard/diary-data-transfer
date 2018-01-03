@@ -330,7 +330,7 @@ describe("#handle", function() {
         })
     })
     
-    it("title: should ignore tags other than 'w:r'", function() {
+    it("title: should ignore tags other than 'w:r' and 'w:t'", function() {
 
         const xml = `
         <w:p w14:paraId="0AEB5374" w14:textId="78AC0EFB" w:rsidR="002C6004" w:rsidRDefault="007B73CE" w:rsidP="0011353B">
@@ -339,6 +339,7 @@ describe("#handle", function() {
             </w:pPr>
             <w:bookmarkStart w:id="2" w:name="_Toc492375987"/>
             <w:r>
+                <w:lastRenderedPageBreak/>
                 <w:t>Bla bla</w:t>
             </w:r>
             <w:bookmarkEnd w:id="2"/>

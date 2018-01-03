@@ -159,7 +159,10 @@ const handleTitleParagraph = function(obj) {
     let title = ""
 
     title += obj.children.filter(node => node.name === "w:r")
-        .map(child => child.children[0].content.trim())
+        .map(node => node.children
+            .filter(node => node.name === "w:t"))
+        .filter(children => children.length > 0)
+        .map(children => children[0].content.trim())
         .filter(s => s !== "")
         .join(" ")
     
