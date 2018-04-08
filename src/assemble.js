@@ -59,7 +59,7 @@ export const assemble = function(parsed) {
                     obj.date.day,
                     obj.date.hours || 0,
                     obj.date.minutes || 0
-                )).getTime() / 1000 //Beware: local time
+                )).getTime() //Beware: local time
             } else {
                 date = obj.date
             }

@@ -24,9 +24,11 @@ const importSingleEntryFromJSON = function(entry) {
         })
     }
 
+/*
     entry.body = entry.body
         .replace(/\n/g, "\\\\n")
         .replace(/\"/g, "\\\"")
+*/
 
     const options = {
         method: "POST",

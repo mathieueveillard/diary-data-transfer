@@ -18,7 +18,7 @@ describe("#assemble", function() {
             {body: "Lorem ipsum dolor sit amet"},
         ]
         assert.deepStrictEqual(assemble(parsed)[0], {
-            date: 1514053800,
+            date: 1514053800000,
             title: "Mon titre",
             body: "Lorem ipsum dolor sit amet"
         })
@@ -37,7 +37,7 @@ describe("#assemble", function() {
             {body: "Lorem ipsum dolor sit amet"},
         ]
         assert.deepStrictEqual(assemble(parsed)[0], {
-            date: 1513983600,
+            date: 1513983600000,
             title: "Mon titre",
             body: "Lorem ipsum dolor sit amet"
         })
@@ -45,7 +45,7 @@ describe("#assemble", function() {
 
     it("should group paragraphs when style is MonParagraphe", function() {
         const parsed = [
-            {date: 1514050100},
+            {date: 1514050100000},
             {title: "Mon titre"},
             {
                 style: "MonParagraphe",
@@ -57,7 +57,7 @@ describe("#assemble", function() {
             }
         ]
         assert.deepStrictEqual(assemble(parsed)[0], {
-            date: 1514050100,
+            date: 1514050100000,
             title: "Mon titre",
             body: `Lorem ipsum dolor sit amet
 
@@ -67,7 +67,7 @@ describe("#assemble", function() {
 
     it("should group paragraphs when style is MaCitation", function() {
         const parsed = [
-            {date: 1514050100},
+            {date: 1514050100000},
             {title: "Mon titre"},
             {
                 style: "MaCitation",
@@ -79,7 +79,7 @@ describe("#assemble", function() {
             }
         ]
         assert.deepStrictEqual(assemble(parsed)[0], {
-            date: 1514050100,
+            date: 1514050100000,
             title: "Mon titre",
             body: `> Lorem ipsum dolor sit amet
 
@@ -89,17 +89,17 @@ describe("#assemble", function() {
 
     it("should re-assemble objects by date", function() {
         const parsed = [
-            {date: 1514050100},
+            {date: 1514050100000},
             {title: "Mon titre"},
             {body: "Lorem ipsum dolor sit amet"},
             {title: "Mon titre2"},
             {body: "consectetur adipiscing elit"},
-            {date: 1514050300},
+            {date: 1514050300000},
             {title: "Mon titre3"},
             {body: "Sed ut perspiciatis unde omnis iste natus"},
         ]
         assert.deepStrictEqual(assemble(parsed)[1], {
-            date: 1514050100,
+            date: 1514050100000,
             title: "Mon titre2",
             body: "consectetur adipiscing elit"
         })
@@ -107,16 +107,16 @@ describe("#assemble", function() {
 
     it("should re-assemble objects by date and title", function() {
         const parsed = [
-            {date: 1514050100},
+            {date: 1514050100000},
             {title: "Mon titre"},
             {body: "Lorem ipsum dolor sit amet"},
             {body: "consectetur adipiscing elit"},
-            {date: 1514050300},
+            {date: 1514050300000},
             {title: "Mon titre3"},
             {body: "Sed ut perspiciatis unde omnis iste natus"},
         ]
         assert.deepStrictEqual(assemble(parsed)[1], {
-            date: 1514050100,
+            date: 1514050100000,
             title: "Mon titre",
             body: "consectetur adipiscing elit"
         })
@@ -124,7 +124,7 @@ describe("#assemble", function() {
 
     it("should not group paragraphs when style is not the same", function() {
         const parsed = [
-            {date: 1514050100},
+            {date: 1514050100000},
             {title: "Mon titre"},
             {
                 style: "MonTweet",
@@ -136,7 +136,7 @@ describe("#assemble", function() {
             }
         ]
         assert.deepStrictEqual(assemble(parsed)[1], {
-            date: 1514050100,
+            date: 1514050100000,
             title: "Mon titre",
             body: "consectetur adipiscing elit"
         })
@@ -144,11 +144,11 @@ describe("#assemble", function() {
 
     it("should set a default title if none is provided", function() {
         const parsed = [
-            {date: 1514050100},
+            {date: 1514050100000},
             {body: "Lorem ipsum dolor sit amet"},
         ]
         assert.deepStrictEqual(assemble(parsed)[0], {
-            date: 1514050100,
+            date: 1514050100000,
             title: "",
             body: "Lorem ipsum dolor sit amet"
         })
@@ -156,13 +156,13 @@ describe("#assemble", function() {
 
     it("should ignore empty paragraphs if provided with such", function() {
         const parsed = [
-            {date: 1514050100},
+            {date: 1514050100000},
             {title: "Mon titre"},
             {},
             {body: "Lorem ipsum dolor sit amet"},
         ]
         assert.deepStrictEqual(assemble(parsed)[0], {
-            date: 1514050100,
+            date: 1514050100000,
             title: "Mon titre",
             body: "Lorem ipsum dolor sit amet"
         })
@@ -170,13 +170,13 @@ describe("#assemble", function() {
 
     it("should ignore empty paragraphs if provided with such (2)", function() {
         const parsed = [
-            {date: 1514050100},
+            {date: 1514050100000},
             {title: "Mon titre"},
             {body: ""},
             {body: "Lorem ipsum dolor sit amet"},
         ]
         assert.deepStrictEqual(assemble(parsed)[0], {
-            date: 1514050100,
+            date: 1514050100000,
             title: "Mon titre",
             body: "Lorem ipsum dolor sit amet"
         })
@@ -205,7 +205,7 @@ describe("#assemble", function() {
                 style: "MonTweet",
                 body: "Sed ut perspiciatis unde omnis iste natus"
             },
-            {date: 1514050300},
+            {date: 1514050300000},
             {title: "Mon titre3"},
             {
                 style: "",
@@ -213,7 +213,7 @@ describe("#assemble", function() {
             },
         ]
         assert.deepStrictEqual(assemble(parsed)[1], {
-            date: 1514053800,
+            date: 1514053800000,
             title: "",
             body: "Sed ut perspiciatis unde omnis iste natus"
         })

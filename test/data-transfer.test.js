@@ -100,7 +100,7 @@ describe("#data-transfer", function(done) {
             .then(() => done())
     })
 
-    it("should import data from file", function(done) {
+    it.only("should import data from file", function(done) {
         const options = {
             import: true,
             path: "test/Journal\ 2017.json",
